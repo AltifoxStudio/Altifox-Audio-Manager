@@ -85,19 +85,19 @@ namespace AltifoxStudio.AltifoxAudioManager
                 }
 
             }
-
+            bool first = true;
             float loopEndTime = (loopEnd != NO_CUSTOM_LOOP_END) ? loopEnd : referenceSource.GetAudioSource().clip.length;
             float loopDuration = loopEndTime - loopStart;
+            float firstLoopDuration  = loopEndTime;
 
             while (looping)
             {
                 double lastDspTime = AudioSettings.dspTime;
                 double progressInAudioSeconds = 0;
 
-                while (progressInAudioSeconds < loopDuration)
+                while (progressInAudioSeconds < (first ? firstLoopDuration : loopDuration))
                 {
                     yield return null;
-
                     double currentDspTime = AudioSettings.dspTime;
                     float currentPitch = referenceSource.pitch;
 
@@ -127,6 +127,7 @@ namespace AltifoxStudio.AltifoxAudioManager
                     if (!useDoubleBuffering)
                     {
                         source.time = restartTime;
+                        first = false;
                         if (!source.isPlaying)
                         {
                             source.UnPause();
@@ -136,6 +137,7 @@ namespace AltifoxStudio.AltifoxAudioManager
                     {
                         source.Flip();
                         source.PrepareNextSource(loopStart);
+                        first = false;
                     }
 
                 }

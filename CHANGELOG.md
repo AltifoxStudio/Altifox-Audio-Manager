@@ -5,3 +5,6 @@
 - One Shot Player with unity default events access
 - Intro then looping on musics
 - Float and Int controlled automations of Volume, and Pitch using either unity pitch or semitones
+
+## [1.0.1] - 29/07/2025
+- Fixed a bug where the first loop would end too early

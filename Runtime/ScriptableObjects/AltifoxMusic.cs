@@ -98,7 +98,7 @@ namespace AltifoxStudio.AltifoxAudioManager
         {
             if (trackBeatPerMinute <= 0) return 0f;
             float secondsPerBeat = 60.0f / trackBeatPerMinute;
-            float totalBeats = (measureAtLoopStart - 1) * beatsPerMeasure + (beatAtLoopStart > 0 ? beatAtLoopStart - 1 : 0);
+            float totalBeats = (measureAtLoopStart) * beatsPerMeasure + (beatAtLoopStart > 0 ? beatAtLoopStart - 1 : 0);
             return totalBeats * secondsPerBeat;
         }
 
