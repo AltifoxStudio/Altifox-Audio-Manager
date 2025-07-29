@@ -1,25 +1,27 @@
 using UnityEngine;
 using System.Collections;
-using AltifoxAudio;
 
-public partial class AltifoxOneShotPlayer : MonoBehaviour
+namespace AltifoxStudio.AltifoxAudioManager
 {
-    private IEnumerator CR_TrackNRelease(int audioSourceID)
+    public partial class AltifoxOneShotPlayer : MonoBehaviour
     {
-        if (assignedAudioSources.TryGetValue(audioSourceID, out AltifoxAudioSourceBase assignedAudioSource))
+        private IEnumerator CR_TrackNRelease(int audioSourceID)
         {
-            if (assignedAudioSource.clip != null)
+            if (assignedAudioSources.TryGetValue(audioSourceID, out AltifoxAudioSourceBase assignedAudioSource))
             {
-                //Debug.Log($"Clip Lenght is {assignedAudioSource.clip.length}, pitch is {assignedAudioSource.pitch}");
-                float duration = assignedAudioSource.clip.length / assignedAudioSource.pitch;
-                //Debug.Log($"duration is {duration}");
-                yield return new WaitForSeconds(duration);
+                if (assignedAudioSource.clip != null)
+                {
+                    //Debug.Log($"Clip Lenght is {assignedAudioSource.clip.length}, pitch is {assignedAudioSource.pitch}");
+                    float duration = assignedAudioSource.clip.length / assignedAudioSource.pitch;
+                    //Debug.Log($"duration is {duration}");
+                    yield return new WaitForSeconds(duration);
 
-                AltifoxAudioManager.Instance.ReleaseAltifoxAudioSource(assignedAudioSource);
-                assignedAudioSources.Remove(audioSourceID);
-                AltifoxAudioManager.Instance.SubstractReferenceInCount(altifoxSFX.GetSFXObject());
+                    AltifoxAudioManager.Instance.ReleaseAltifoxAudioSource(assignedAudioSource);
+                    assignedAudioSources.Remove(audioSourceID);
+                    AltifoxAudioManager.Instance.SubstractReferenceInCount(altifoxSFX.GetSFXObject());
+                }
             }
-        }
 
+        }
     }
 }

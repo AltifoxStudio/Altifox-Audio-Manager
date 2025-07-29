@@ -1,7 +1,7 @@
 using UnityEngine;
 using System;
 
-namespace AltifoxTools
+namespace AltifoxStudio.AltifoxAudioManager
 {
 
     public class PlaybackTools

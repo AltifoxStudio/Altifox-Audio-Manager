@@ -1,6 +1,8 @@
 using UnityEngine;
 
-
-public class AltifloatEditorController : MonoBehaviour {
+namespace AltifoxStudio.AltifoxAudioManager
+{
+    public class AltifloatEditorController : MonoBehaviour {
     public Altifloat altifloat;
+}
 }

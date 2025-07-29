@@ -1,200 +1,202 @@
 using UnityEngine;
 using System.Collections.Generic;
-using AltifoxTools;
-using AltifoxAudio;
 
-/// <summary>
-/// The persistent player should be used to play loops such as musics and soundscapes in a lesser way
-/// For soundscapes, I'm going to implement a specific object that takes into account the animals and the background noise
-/// </summary>
-public partial class AltifoxPersistentPlayer : MonoBehaviour
+
+namespace AltifoxStudio.AltifoxAudioManager
 {
-
-    public AltifoxPlaylist playlist;
-
-    // I hide this in inspector cause it's just a container that will be loaded with the 
-    // currently playing music
-    [HideInInspector]
-    public AltifoxMusic altifoxMusicSO;
-    public static AltifoxPersistentPlayer Instance { get; private set; }
-
-    // ========================================================================
-    // Dictionaires 
-    // ========================================================================
-
-    public Dictionary<string, AltifoxAudioSourceBase> musicLayers = new Dictionary<string, AltifoxAudioSourceBase>(); // The layers in the music
-    public Dictionary<string, float> layerPlayVolume = new Dictionary<string, float>(); // This is the default volume of each layer
-    private Dictionary<string, Coroutine> activeTransitions = new Dictionary<string, Coroutine>(); // This tracks the transitions to avoid conflicts
-    private Dictionary<string, AltifoxMusic> playlistTracks = new Dictionary<string, AltifoxMusic>(); // this one just lists the tracks in the playlist
-    private Dictionary<string, bool> layerIsActive = new Dictionary<string, bool>(); // and this final one tracks if a layer is active
-    public bool playOnAwake;
-    public bool useDoubleBuffering = true;
-    private bool isPlaying;
-    private double dspTimeAtPlay;
-    public bool looping;
-    private const float NO_CUSTOM_LOOP_START = 0f;
-    private const float NO_CUSTOM_LOOP_END = -1f;
     /// <summary>
-    /// Very simple awake, with singleton pattern
-    /// the idea is to populate the playlist from the playlist Scriptable Object
-    /// to avoid modifying it directly
+    /// The persistent player should be used to play loops such as musics and soundscapes in a lesser way
+    /// For soundscapes, I'm going to implement a specific object that takes into account the animals and the background noise
     /// </summary>
-    private void Awake()
+    public partial class AltifoxPersistentPlayer : MonoBehaviour
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this.gameObject);
-            return;
-        }
 
-        Instance = this;
-        DontDestroyOnLoad(this.gameObject);
+        public AltifoxPlaylist playlist;
 
-        // initialisation du dictionaire pour la playlist
-        for (int i = 0; i < playlist.Items.Length; i++)
-        {
-            playlistTracks.Add(playlist.Items[i].name, playlist.Items[i].altifoxMusic);
-        }
-        // Puis on récupere le default depuis le ScriptableObject
-        altifoxMusicSO = playlistTracks[playlist.defaultMusic];
-    }
+        // I hide this in inspector cause it's just a container that will be loaded with the 
+        // currently playing music
+        [HideInInspector]
+        public AltifoxMusic altifoxMusicSO;
+        public static AltifoxPersistentPlayer Instance { get; private set; }
 
-    /// <summary>
-    /// When reaching start, we gather the data from the different layers of the
-    /// current music and call Play() if the user clicked on PlayOnAwake
-    /// </summary>
-    private void Start()
-    {
-        for (int i = 0; i < altifoxMusicSO.musicLayers.Length; i++)
-        {
-            MusicLayer layerConfig = altifoxMusicSO.musicLayers[i];
-            layerPlayVolume.Add(layerConfig.name, layerConfig.activeVolume);
-            layerIsActive.Add(layerConfig.name, false);
-        }
-        if (playOnAwake)
-        {
-            Play();
-        }
-    }
+        // ========================================================================
+        // Dictionaires 
+        // ========================================================================
 
-    /// <summary>
-    /// Plays the track with the proper configuration of the different layers
-    /// </summary>
-    public void Play()
-    {
-        for (int i = 0; i < altifoxMusicSO.musicLayers.Length; i++)
+        public Dictionary<string, AltifoxAudioSourceBase> musicLayers = new Dictionary<string, AltifoxAudioSourceBase>(); // The layers in the music
+        public Dictionary<string, float> layerPlayVolume = new Dictionary<string, float>(); // This is the default volume of each layer
+        private Dictionary<string, Coroutine> activeTransitions = new Dictionary<string, Coroutine>(); // This tracks the transitions to avoid conflicts
+        private Dictionary<string, AltifoxMusic> playlistTracks = new Dictionary<string, AltifoxMusic>(); // this one just lists the tracks in the playlist
+        private Dictionary<string, bool> layerIsActive = new Dictionary<string, bool>(); // and this final one tracks if a layer is active
+        public bool playOnAwake;
+        public bool useDoubleBuffering = true;
+        private bool isPlaying;
+        private double dspTimeAtPlay;
+        public bool looping;
+        private const float NO_CUSTOM_LOOP_START = 0f;
+        private const float NO_CUSTOM_LOOP_END = -1f;
+        /// <summary>
+        /// Very simple awake, with singleton pattern
+        /// the idea is to populate the playlist from the playlist Scriptable Object
+        /// to avoid modifying it directly
+        /// </summary>
+        private void Awake()
         {
-            AltifoxAudioSourceBase newAS;
-            MusicLayer layerConfig = altifoxMusicSO.musicLayers[i];
-            if (!useDoubleBuffering)
+            if (Instance != null && Instance != this)
             {
-                newAS = AltifoxAudioManager.Instance.RequestSBAltifoxAudioSource();
-            }
-            else
-            {
-                newAS = AltifoxAudioManager.Instance.RequestDBAltifoxAudioSource();
-            }
-            
-            newAS.clip = layerConfig.audioClip;
-            newAS.spatialize = layerConfig.spatialize;
-            newAS.spatialBlend = layerConfig.spatialBlend;
-
-            if (layerConfig.activeByDefault)
-            {
-                newAS.volume = 1f;
-            }
-            else
-            {
-                newAS.volume = 0f;
-            }
-            // Might not use this a lot, I don't know, but looping is nice to have
-            if (altifoxMusicSO.loop)
-            {
-                looping = true;
+                Destroy(this.gameObject);
+                return;
             }
 
-            musicLayers[layerConfig.name] = newAS;
-            layerIsActive[layerConfig.name] = true;
-            newAS.Play();
-        }
-        dspTimeAtPlay = AudioSettings.dspTime;
-        Coroutine loopTracking = StartCoroutine(CR_ManageLoopRegion(altifoxMusicSO.GetLoopStartTime(), altifoxMusicSO.GetLoopEndTime()));
-        isPlaying = true;
-    }
+            Instance = this;
+            DontDestroyOnLoad(this.gameObject);
 
-    public void Pause()
-    {
-        foreach (KeyValuePair<string, AltifoxAudioSourceBase> layer in musicLayers)
-        {
-            string layerName = layer.Key;
-            AltifoxAudioSourceBase audioSource = layer.Value;
-            audioSource.Pause();
-        }
-        isPlaying = false;
-    }
-
-    public void UnPause()
-    {
-        foreach (KeyValuePair<string, AltifoxAudioSourceBase> layer in musicLayers)
-        {
-            string layerName = layer.Key;
-            AltifoxAudioSourceBase audioSource = layer.Value;
-            audioSource.UnPause();
-        }
-        isPlaying = false;
-    }
-
-    /// <summary>
-    /// Just a wrapper for the CR_FadeOutLayers coroutine
-    /// </summary>
-    /// <param name="layersToFade"></param>
-    /// <param name="duration"></param>
-    /// <param name="transition"></param>
-    /// <param name="releaseSources"></param>
-    public void FadeOutLayers(string[] layersToFade, float duration, InterpolationType transition, bool releaseSources = true)
-    {
-        Coroutine newTransition = StartCoroutine(CR_FadeOutLayers(layersToFade, duration, altifoxMusicSO.transitions, releaseSources));
-    }
-
-    public void SetLayerActive(string layerName, bool active, bool fade = true)
-    {
-        if (!isPlaying)
-        {
-            Play();
-        }
-        if (musicLayers.TryGetValue(layerName, out AltifoxAudioSourceBase AS))
-        {
-            if (activeTransitions.TryGetValue(layerName, out Coroutine runningTransition))
+            // initialisation du dictionaire pour la playlist
+            for (int i = 0; i < playlist.Items.Length; i++)
             {
-                if (runningTransition != null)
+                playlistTracks.Add(playlist.Items[i].name, playlist.Items[i].altifoxMusic);
+            }
+            // Puis on récupere le default depuis le ScriptableObject
+            altifoxMusicSO = playlistTracks[playlist.defaultMusic];
+        }
+
+        /// <summary>
+        /// When reaching start, we gather the data from the different layers of the
+        /// current music and call Play() if the user clicked on PlayOnAwake
+        /// </summary>
+        private void Start()
+        {
+            for (int i = 0; i < altifoxMusicSO.musicLayers.Length; i++)
+            {
+                MusicLayer layerConfig = altifoxMusicSO.musicLayers[i];
+                layerPlayVolume.Add(layerConfig.name, layerConfig.activeVolume);
+                layerIsActive.Add(layerConfig.name, false);
+            }
+            if (playOnAwake)
+            {
+                Play();
+            }
+        }
+
+        /// <summary>
+        /// Plays the track with the proper configuration of the different layers
+        /// </summary>
+        public void Play()
+        {
+            for (int i = 0; i < altifoxMusicSO.musicLayers.Length; i++)
+            {
+                AltifoxAudioSourceBase newAS;
+                MusicLayer layerConfig = altifoxMusicSO.musicLayers[i];
+                if (!useDoubleBuffering)
                 {
-                    StopCoroutine(runningTransition);
+                    newAS = AltifoxAudioManager.Instance.RequestSBAltifoxAudioSource();
                 }
+                else
+                {
+                    newAS = AltifoxAudioManager.Instance.RequestDBAltifoxAudioSource();
+                }
+
+                newAS.clip = layerConfig.audioClip;
+                newAS.spatialize = layerConfig.spatialize;
+                newAS.spatialBlend = layerConfig.spatialBlend;
+
+                if (layerConfig.activeByDefault)
+                {
+                    newAS.volume = 1f;
+                }
+                else
+                {
+                    newAS.volume = 0f;
+                }
+                // Might not use this a lot, I don't know, but looping is nice to have
+                if (altifoxMusicSO.loop)
+                {
+                    looping = true;
+                }
+
+                musicLayers[layerConfig.name] = newAS;
+                layerIsActive[layerConfig.name] = true;
+                newAS.Play();
             }
-
-            if (!fade)
-            {
-                AS.volume = active ? 1.0f : 0.0f;
-            }
-            float targetVolume = active ? 1.0f : 0.0f;
-            float duration = altifoxMusicSO.transitionTime;
-
-            layerPlayVolume[layerName] = active ? layerPlayVolume[layerName] : AS.volume;
-            layerIsActive[layerName] = active;
-
-            Coroutine newTransition = StartCoroutine(CR_TransitionLayer(AS, targetVolume * layerPlayVolume[layerName], duration, altifoxMusicSO.transitions));
-            activeTransitions[layerName] = newTransition;
+            dspTimeAtPlay = AudioSettings.dspTime;
+            Coroutine loopTracking = StartCoroutine(CR_ManageLoopRegion(altifoxMusicSO.GetLoopStartTime(), altifoxMusicSO.GetLoopEndTime()));
+            isPlaying = true;
         }
 
-        else
+        public void Pause()
         {
-            Debug.LogWarning($"Warning: trying to activate layer '{layerName}' but this layer does not exist");
+            foreach (KeyValuePair<string, AltifoxAudioSourceBase> layer in musicLayers)
+            {
+                string layerName = layer.Key;
+                AltifoxAudioSourceBase audioSource = layer.Value;
+                audioSource.Pause();
+            }
+            isPlaying = false;
         }
 
-    }
+        public void UnPause()
+        {
+            foreach (KeyValuePair<string, AltifoxAudioSourceBase> layer in musicLayers)
+            {
+                string layerName = layer.Key;
+                AltifoxAudioSourceBase audioSource = layer.Value;
+                audioSource.UnPause();
+            }
+            isPlaying = false;
+        }
 
-    public bool checkLayerState(string layer)
-    {
-        return layerIsActive[layer];
+        /// <summary>
+        /// Just a wrapper for the CR_FadeOutLayers coroutine
+        /// </summary>
+        /// <param name="layersToFade"></param>
+        /// <param name="duration"></param>
+        /// <param name="transition"></param>
+        /// <param name="releaseSources"></param>
+        public void FadeOutLayers(string[] layersToFade, float duration, InterpolationType transition, bool releaseSources = true)
+        {
+            Coroutine newTransition = StartCoroutine(CR_FadeOutLayers(layersToFade, duration, altifoxMusicSO.transitions, releaseSources));
+        }
+
+        public void SetLayerActive(string layerName, bool active, bool fade = true)
+        {
+            if (!isPlaying)
+            {
+                Play();
+            }
+            if (musicLayers.TryGetValue(layerName, out AltifoxAudioSourceBase AS))
+            {
+                if (activeTransitions.TryGetValue(layerName, out Coroutine runningTransition))
+                {
+                    if (runningTransition != null)
+                    {
+                        StopCoroutine(runningTransition);
+                    }
+                }
+
+                if (!fade)
+                {
+                    AS.volume = active ? 1.0f : 0.0f;
+                }
+                float targetVolume = active ? 1.0f : 0.0f;
+                float duration = altifoxMusicSO.transitionTime;
+
+                layerPlayVolume[layerName] = active ? layerPlayVolume[layerName] : AS.volume;
+                layerIsActive[layerName] = active;
+
+                Coroutine newTransition = StartCoroutine(CR_TransitionLayer(AS, targetVolume * layerPlayVolume[layerName], duration, altifoxMusicSO.transitions));
+                activeTransitions[layerName] = newTransition;
+            }
+
+            else
+            {
+                Debug.LogWarning($"Warning: trying to activate layer '{layerName}' but this layer does not exist");
+            }
+
+        }
+
+        public bool checkLayerState(string layer)
+        {
+            return layerIsActive[layer];
+        }
     }
 }

@@ -1,47 +1,51 @@
 using UnityEngine;
-using AltifoxTools;
 using System;
 
-public class AltifoxOneShotPlayerAutomation : MonoBehaviour
+
+namespace AltifoxStudio.AltifoxAudioManager
 {
-    public AltifoxParameterBase parameter; 
-    public Automation[] automations;
-
-    public AltifoxOneShotPlayer altifoxPlayer;
-
-    private void OnEnable()
+    public class AltifoxOneShotPlayerAutomation : MonoBehaviour
     {
-        parameter.OnValueChangedAsFloat += UpdateParameters;
-    }
+        public AltifoxParameterBase parameter;
+        public Automation[] automations;
 
-    private void OnDisable() {
-        parameter.OnValueChangedAsFloat -= UpdateParameters;
-    }
+        public AltifoxOneShotPlayer altifoxPlayer;
 
-    private void UpdateParameters(float v)
-    {
-        System.Func<Vector2, Vector2, float, float> interpolationFunction;
-
-        foreach (Automation automation in automations)
+        private void OnEnable()
         {
-            interpolationFunction = Interpolations.GetInterpolationFuncRef(automation.interpolationType);
-            float valueToSet = interpolationFunction(automation.startKey, automation.endKey, v);
-            switch (automation.audioSourceParameter)
-            {
-                case AudioSourceParameter.volume:
-                    altifoxPlayer.SetParameterBuffer(AudioSourceParameter.volume, valueToSet);
-                    break;
-                case AudioSourceParameter.pitch:
-                    altifoxPlayer.SetParameterBuffer(AudioSourceParameter.pitch, valueToSet);
-                    break;
-                case AudioSourceParameter.semitones:
-                    altifoxPlayer.SetParameterBuffer(AudioSourceParameter.semitones, valueToSet);
-                    break;
-                default:
-                    break;
-            }
+            parameter.OnValueChangedAsFloat += UpdateParameters;
         }
 
+        private void OnDisable()
+        {
+            parameter.OnValueChangedAsFloat -= UpdateParameters;
+        }
 
+        private void UpdateParameters(float v)
+        {
+            System.Func<Vector2, Vector2, float, float> interpolationFunction;
+
+            foreach (Automation automation in automations)
+            {
+                interpolationFunction = Interpolations.GetInterpolationFuncRef(automation.interpolationType);
+                float valueToSet = interpolationFunction(automation.startKey, automation.endKey, v);
+                switch (automation.audioSourceParameter)
+                {
+                    case AudioSourceParameter.volume:
+                        altifoxPlayer.SetParameterBuffer(AudioSourceParameter.volume, valueToSet);
+                        break;
+                    case AudioSourceParameter.pitch:
+                        altifoxPlayer.SetParameterBuffer(AudioSourceParameter.pitch, valueToSet);
+                        break;
+                    case AudioSourceParameter.semitones:
+                        altifoxPlayer.SetParameterBuffer(AudioSourceParameter.semitones, valueToSet);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+
+        }
     }
 }

@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace AltifoxAudio
+namespace AltifoxStudio.AltifoxAudioManager
 {
     public abstract class AltifoxAudioSourceBase : MonoBehaviour
     {

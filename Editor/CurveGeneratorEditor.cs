@@ -1,25 +1,29 @@
 using UnityEngine;
 using UnityEditor; // We need this namespace for editor scripts
+using AltifoxStudio.AltifoxAudioManager;
 
-[CustomEditor(typeof(AutomationPreviewer))]
-public class AutomationPreviewerEditor : Editor
+namespace AltifoxStudio.AltifoxAudioManager.customEditorScritpts
 {
-    public override void OnInspectorGUI()
+    [CustomEditor(typeof(AutomationPreviewer))]
+    public class AutomationPreviewerEditor : Editor
     {
-        // Draw the default fields (sourceType, points, etc.)
-        DrawDefaultInspector();
-
-        // Get a reference to the script we're inspecting
-        AutomationPreviewer generator = (AutomationPreviewer)target;
-
-        // Add a space for visual separation
-        EditorGUILayout.Space();
-
-        // Add a button. If it's clicked...
-        if (GUILayout.Button("Generate Curve"))
+        public override void OnInspectorGUI()
         {
-            // ...call the public method from our generator script.
-            generator.GenerateCurve();
+            // Draw the default fields (sourceType, points, etc.)
+            DrawDefaultInspector();
+
+            // Get a reference to the script we're inspecting
+            AutomationPreviewer generator = (AutomationPreviewer)target;
+
+            // Add a space for visual separation
+            EditorGUILayout.Space();
+
+            // Add a button. If it's clicked...
+            if (GUILayout.Button("Generate Curve"))
+            {
+                // ...call the public method from our generator script.
+                generator.GenerateCurve();
+            }
         }
     }
 }

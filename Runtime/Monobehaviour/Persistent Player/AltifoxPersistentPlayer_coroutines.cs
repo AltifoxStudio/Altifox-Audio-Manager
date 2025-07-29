@@ -1,82 +1,83 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
-using AltifoxTools;
 using System.Linq;
-using AltifoxAudio;
 
-public partial class AltifoxPersistentPlayer : MonoBehaviour
+
+namespace AltifoxStudio.AltifoxAudioManager
 {
-    private IEnumerator CR_FadeOutLayers(string[] layersToFade, float duration, InterpolationType transition, bool releaseSources = true)
+    public partial class AltifoxPersistentPlayer : MonoBehaviour
     {
-        AltifoxAudioSourceBase[] audioSources;
-        List<Vector2> startPoints = new List<Vector2>();
-        Vector2 zeroPoint = new Vector2(duration, 0f);
+        private IEnumerator CR_FadeOutLayers(string[] layersToFade, float duration, InterpolationType transition, bool releaseSources = true)
+        {
+            AltifoxAudioSourceBase[] audioSources;
+            List<Vector2> startPoints = new List<Vector2>();
+            Vector2 zeroPoint = new Vector2(duration, 0f);
 
-        if (layersToFade[0] == "All")
-        {
-            audioSources = musicLayers.Values.ToArray();
-        }
-        else
-        {
-            audioSources = layersToFade.Select(key => musicLayers[key]).ToArray();
-        }
-
-        if (duration <= 0f)
-        {
-            foreach (AltifoxAudioSourceBase AS in audioSources)
+            if (layersToFade[0] == "All")
             {
-                AS.volume = 0f;
+                audioSources = musicLayers.Values.ToArray();
             }
-            yield break;
-        }
-        else
-        {
-            foreach (AltifoxAudioSourceBase AS in audioSources)
+            else
             {
-                startPoints.Add(new Vector2(0f, AS.volume));
+                audioSources = layersToFade.Select(key => musicLayers[key]).ToArray();
             }
-        }
 
-        System.Func<Vector2, Vector2, float, float> interpolationFunction = Interpolations.GetInterpolationFuncRef(transition);
-        float elapsedTime = 0f;
-
-        while (elapsedTime < duration)
-        {
-            elapsedTime += Time.deltaTime;
-            for (int i = 0; i < audioSources.Length; i++)
+            if (duration <= 0f)
             {
-                audioSources[i].volume = interpolationFunction(startPoints[i], zeroPoint, elapsedTime);
-            }
-            yield return null;
-        }
-
-        if (layersToFade[0] == "All")
-        {
-            foreach (AltifoxAudioSourceBase AS in audioSources)
-            {
-                AS.volume = 0f;
-                if (releaseSources)
+                foreach (AltifoxAudioSourceBase AS in audioSources)
                 {
-                    AltifoxAudioManager.Instance.ReleaseAltifoxAudioSource(AS);
+                    AS.volume = 0f;
+                }
+                yield break;
+            }
+            else
+            {
+                foreach (AltifoxAudioSourceBase AS in audioSources)
+                {
+                    startPoints.Add(new Vector2(0f, AS.volume));
                 }
             }
+
+            System.Func<Vector2, Vector2, float, float> interpolationFunction = Interpolations.GetInterpolationFuncRef(transition);
+            float elapsedTime = 0f;
+
+            while (elapsedTime < duration)
+            {
+                elapsedTime += Time.deltaTime;
+                for (int i = 0; i < audioSources.Length; i++)
+                {
+                    audioSources[i].volume = interpolationFunction(startPoints[i], zeroPoint, elapsedTime);
+                }
+                yield return null;
+            }
+
+            if (layersToFade[0] == "All")
+            {
+                foreach (AltifoxAudioSourceBase AS in audioSources)
+                {
+                    AS.volume = 0f;
+                    if (releaseSources)
+                    {
+                        AltifoxAudioManager.Instance.ReleaseAltifoxAudioSource(AS);
+                    }
+                }
+            }
+
         }
 
-    }
 
 
-
-    private IEnumerator CR_ManageLoopRegion(float loopStart = NO_CUSTOM_LOOP_START, float loopEnd = NO_CUSTOM_LOOP_END)
-    {
-        AltifoxAudioSourceBase referenceSource = musicLayers.Values.FirstOrDefault();
-        if (referenceSource == null || referenceSource.GetAudioSource().clip == null)
+        private IEnumerator CR_ManageLoopRegion(float loopStart = NO_CUSTOM_LOOP_START, float loopEnd = NO_CUSTOM_LOOP_END)
         {
-            Debug.LogError("Reference source or clip is missing!");
-            yield break;
-        }
+            AltifoxAudioSourceBase referenceSource = musicLayers.Values.FirstOrDefault();
+            if (referenceSource == null || referenceSource.GetAudioSource().clip == null)
+            {
+                Debug.LogError("Reference source or clip is missing!");
+                yield break;
+            }
 
-        foreach (AltifoxAudioSourceBase source in musicLayers.Values)
+            foreach (AltifoxAudioSourceBase source in musicLayers.Values)
             {
                 if (useDoubleBuffering)
                 {
@@ -85,101 +86,102 @@ public partial class AltifoxPersistentPlayer : MonoBehaviour
 
             }
 
-        float loopEndTime = (loopEnd != NO_CUSTOM_LOOP_END) ? loopEnd : referenceSource.GetAudioSource().clip.length;
-        float loopDuration = loopEndTime - loopStart;
+            float loopEndTime = (loopEnd != NO_CUSTOM_LOOP_END) ? loopEnd : referenceSource.GetAudioSource().clip.length;
+            float loopDuration = loopEndTime - loopStart;
 
-        while (looping)
-        {
-            double lastDspTime = AudioSettings.dspTime;
-            double progressInAudioSeconds = 0;
-
-            while (progressInAudioSeconds < loopDuration)
+            while (looping)
             {
-                yield return null;
+                double lastDspTime = AudioSettings.dspTime;
+                double progressInAudioSeconds = 0;
 
-                double currentDspTime = AudioSettings.dspTime;
-                float currentPitch = referenceSource.pitch;
-
-                if (currentPitch <= 0)
+                while (progressInAudioSeconds < loopDuration)
                 {
-                    lastDspTime = currentDspTime;
-                    continue;
-                }
+                    yield return null;
 
-                double dspDeltaTime = currentDspTime - lastDspTime;
-                progressInAudioSeconds += dspDeltaTime * currentPitch;
-                lastDspTime = currentDspTime;
-            }
+                    double currentDspTime = AudioSettings.dspTime;
+                    float currentPitch = referenceSource.pitch;
 
-            for (int i = 0; i < altifoxMusicSO.musicLayers.Length; i++)
-            {
-                MusicLayer layerConfig = altifoxMusicSO.musicLayers[i];
-                if (layerConfig.deactivateOnLoop)
-                {
-                    musicLayers[layerConfig.name].mute = true;
-                }
-            }
-
-            float restartTime = loopStart;
-            foreach (AltifoxAudioSourceBase source in musicLayers.Values)
-            {
-                if (!useDoubleBuffering)
-                {
-                    source.time = restartTime;
-                    if (!source.isPlaying)
+                    if (currentPitch <= 0)
                     {
-                        source.UnPause();
+                        lastDspTime = currentDspTime;
+                        continue;
+                    }
+
+                    double dspDeltaTime = currentDspTime - lastDspTime;
+                    progressInAudioSeconds += dspDeltaTime * currentPitch;
+                    lastDspTime = currentDspTime;
+                }
+
+                for (int i = 0; i < altifoxMusicSO.musicLayers.Length; i++)
+                {
+                    MusicLayer layerConfig = altifoxMusicSO.musicLayers[i];
+                    if (layerConfig.deactivateOnLoop)
+                    {
+                        musicLayers[layerConfig.name].mute = true;
                     }
                 }
-                else
+
+                float restartTime = loopStart;
+                foreach (AltifoxAudioSourceBase source in musicLayers.Values)
                 {
-                    source.Flip();
-                    source.PrepareNextSource(loopStart);
+                    if (!useDoubleBuffering)
+                    {
+                        source.time = restartTime;
+                        if (!source.isPlaying)
+                        {
+                            source.UnPause();
+                        }
+                    }
+                    else
+                    {
+                        source.Flip();
+                        source.PrepareNextSource(loopStart);
+                    }
+
                 }
-
+                //yield return new WaitUntil(() => referenceSource.time >= targetTime || !referenceSource.isPlaying);
             }
-            //yield return new WaitUntil(() => referenceSource.time >= targetTime || !referenceSource.isPlaying);
+            yield break;
         }
-        yield break;
-    }
 
-    private IEnumerator CR_TransitionLayer(AltifoxAudioSourceBase audioSource, float targetVolume, float duration, InterpolationType transition)
-    {
-        if (audioSource.mute)
+        private IEnumerator CR_TransitionLayer(AltifoxAudioSourceBase audioSource, float targetVolume, float duration, InterpolationType transition)
         {
-            audioSource.mute = false;
-            if (audioSource.volume > 0f)
+            if (audioSource.mute)
             {
-                targetVolume = audioSource.volume;
-                audioSource.volume = 0f;
+                audioSource.mute = false;
+                if (audioSource.volume > 0f)
+                {
+                    targetVolume = audioSource.volume;
+                    audioSource.volume = 0f;
+                }
             }
-        }
-        if (duration <= 0f)
-        {
+            if (duration <= 0f)
+            {
+                audioSource.volume = targetVolume;
+                if (targetVolume == 0)
+                {
+                    audioSource.mute = true;
+                }
+                yield break; // this stops the coroutine
+            }
+            System.Func<Vector2, Vector2, float, float> interpolationFunction = Interpolations.GetInterpolationFuncRef(transition);
+
+            float elapsedTime = 0f;
+            Vector2 startVolume = new Vector2(0f, audioSource.volume);
+            Vector2 stopVolume = new Vector2(duration, targetVolume);
+            float currentVolume = startVolume.y;
+            while (elapsedTime < duration)
+            {
+
+                elapsedTime += Time.deltaTime;
+                audioSource.volume = interpolationFunction(startVolume, stopVolume, elapsedTime); ;
+                yield return null;
+            }
             audioSource.volume = targetVolume;
             if (targetVolume == 0)
             {
                 audioSource.mute = true;
             }
-            yield break; // this stops the coroutine
-        }
-        System.Func<Vector2, Vector2, float, float> interpolationFunction = Interpolations.GetInterpolationFuncRef(transition);
-
-        float elapsedTime = 0f;
-        Vector2 startVolume = new Vector2(0f, audioSource.volume);
-        Vector2 stopVolume = new Vector2(duration, targetVolume);
-        float currentVolume = startVolume.y;
-        while (elapsedTime < duration)
-        {
-
-            elapsedTime += Time.deltaTime;
-            audioSource.volume = interpolationFunction(startVolume, stopVolume, elapsedTime); ;
-            yield return null;
-        }
-        audioSource.volume = targetVolume;
-        if (targetVolume == 0)
-        {
-            audioSource.mute = true;
         }
     }
 }

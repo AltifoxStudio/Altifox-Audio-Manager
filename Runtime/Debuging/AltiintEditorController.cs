@@ -1,6 +1,8 @@
 using UnityEngine;
 
-
-public class AltiintEditorController : MonoBehaviour {
+namespace AltifoxStudio.AltifoxAudioManager
+{
+    public class AltiintEditorController : MonoBehaviour {
     public Altiint altiint;
+}
 }
