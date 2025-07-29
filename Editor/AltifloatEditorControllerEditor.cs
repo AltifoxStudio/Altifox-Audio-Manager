@@ -1,8 +1,8 @@
 using UnityEngine;
 using UnityEditor; // Required for custom editors
-using AltifoxStudio.AltifoxAudioManager;
 
-namespace AltifoxStudio.AltifoxAudioManager
+
+namespace AltifoxStudio.AltifoxAudioManager.customEditorScritpts
 {
     // This attribute tells Unity that this class is a custom editor for AltifoxFloatController
     [CustomEditor(typeof(AltifloatEditorController))]
