@@ -8,3 +8,5 @@
 
 ## [1.0.1] - 29/07/2025
 - Fixed a bug where the first loop would end too early
+
+## [1.0.2] - 30/07/2025
