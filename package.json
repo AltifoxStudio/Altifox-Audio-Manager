@@ -1,0 +1,19 @@
+{
+  "name": "com.altifoxstudio.altifoxaudio",
+  "version": "1.0.0",
+  "displayName": "Altifox Audio",
+  "description": "A simple audio manager to create dynamic audio soundcapes and musics in unity projects",
+  "unity": "6.0",
+  "dependencies": {
+ },
+ "keywords": [
+    "Audio",
+    "Dynamic Music",
+    "Automation"
+  ],
+  "author": {
+    "name": "Boris Burgarella - Altifox Studio",
+    "email": "b.burgarella@altifoxstudio.com",
+    "url": "https://www.altifoxstudio.com/"
+  }
+}
