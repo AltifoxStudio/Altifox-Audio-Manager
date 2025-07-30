@@ -289,7 +289,7 @@ namespace AltifoxStudio.AltifoxAudioManager
         {
             audioSources[(flipper + 1) % 2].Play();
             audioSources[(flipper + 1) % 2].Pause();
-            Debug.Log($"Preparing the next source to start playing at: {time}");
+            //Debug.Log($"Preparing the next source to start playing at: {time}");
             audioSources[(flipper + 1) % 2].time = time;
         }
 
