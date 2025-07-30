@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "displayName": "Altifox Audio",
   "description": "A simple audio manager to create dynamic audio soundcapes and musics in unity projects",
-  "unity": "6.0",
+  "unity": "6.1",
   "dependencies": {
  },
  "keywords": [
