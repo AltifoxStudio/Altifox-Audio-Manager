@@ -53,6 +53,13 @@ namespace AltifoxStudio.AltifoxAudioManager
             return SFX.CanPlayNow();
         }
 
+
+        public override bool GetSpatializeBool()
+        {
+            AltifoxSFX SFX = GetAltifoxSFX();
+            return SFX.GetSpatializeBool();
+        }
+
         public override void TagPlayTime()
         {
             AltifoxSFX SFX = GetAltifoxSFX();
@@ -62,6 +69,17 @@ namespace AltifoxStudio.AltifoxAudioManager
         public override AudioClip GetAudioClip()
         {
             return GetAltifoxSFX().GetAudioClip();
+        }
+
+        public override float GetMinSpatialDistance()
+        {
+            return GetAltifoxSFX().GetMinSpatialDistance();
+        }
+
+
+        public override float GetMaxSpatialDistance()
+        {
+            return GetAltifoxSFX().GetMaxSpatialDistance();
         }
 
 

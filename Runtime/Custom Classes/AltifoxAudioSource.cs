@@ -21,6 +21,9 @@ namespace AltifoxStudio.AltifoxAudioManager
         public abstract float time { get; set; }
         public abstract float spatialBlend { get; set; }
 
+        public abstract float minDistance { get; set; }
+        public abstract float maxDistance { get; set; }
+
         public abstract bool mute { get; set; }
         public abstract bool spatialize { get; set; }
         public abstract bool isPlaying { get; }
@@ -83,6 +86,18 @@ namespace AltifoxStudio.AltifoxAudioManager
         {
             get => audioSource.time;
             set => audioSource.time = value;
+        }
+
+        public override float minDistance
+        {
+            get => audioSource.minDistance;
+            set => audioSource.minDistance = value;
+        }
+
+        public override float maxDistance
+        {
+            get => audioSource.maxDistance;
+            set => audioSource.maxDistance = value;
         }
 
         public override float spatialBlend
@@ -166,6 +181,7 @@ namespace AltifoxStudio.AltifoxAudioManager
             get => audioSources[flipper].time;
             set => audioSources[flipper].time = value;
         }
+        
 
         public override float spatialBlend
         {
@@ -174,6 +190,26 @@ namespace AltifoxStudio.AltifoxAudioManager
             {
                 audioSources[0].spatialBlend = value;
                 audioSources[1].spatialBlend = value;
+            }
+        }
+
+        public override float minDistance
+        {
+            get => audioSources[flipper].minDistance;
+            set
+            {
+                audioSources[0].minDistance = value;
+                audioSources[1].minDistance = value;
+            }
+        }
+
+        public override float maxDistance
+        {
+            get => audioSources[flipper].maxDistance;
+            set
+            {
+                audioSources[0].maxDistance = value;
+                audioSources[1].maxDistance = value;
             }
         }
 
@@ -251,6 +287,9 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         public override void PrepareNextSource(float time)
         {
+            audioSources[(flipper + 1) % 2].Play();
+            audioSources[(flipper + 1) % 2].Pause();
+            Debug.Log($"Preparing the next source to start playing at: {time}");
             audioSources[(flipper + 1) % 2].time = time;
         }
 

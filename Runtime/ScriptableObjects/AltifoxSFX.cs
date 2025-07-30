@@ -30,6 +30,9 @@ namespace AltifoxStudio.AltifoxAudioManager
         [Range(0f, 1f)]
         public float spatialBlend = 1f;
 
+        public float minDistanceSpatialize = 5f;
+        public float maxDistanceSpatialize = 500f;
+
         // -----------------------------------------
         private int lastPlayedClip = -1;
         private float lastTimePlayed = 0f;
@@ -70,9 +73,25 @@ namespace AltifoxStudio.AltifoxAudioManager
             return pitch.SampleValue();
         }
 
+        public override bool GetSpatializeBool()
+        {
+            return spatialize;
+        }
+
         public override float GetSpatialBlend()
         {
             return spatialBlend;
+        }
+
+        public override float GetMinSpatialDistance()
+        {
+            return minDistanceSpatialize;
+        }
+
+
+        public override float GetMaxSpatialDistance()
+        {
+            return maxDistanceSpatialize;
         }
 
         public override AltifoxSFX GetSFXObject()

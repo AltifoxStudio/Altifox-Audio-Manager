@@ -4,44 +4,6 @@ using UnityEngine.Audio;
 
 namespace AltifoxStudio.AltifoxAudioManager
 {
-    // This enum doesn't appear in the AltifoxMusic inspector but is kept for context.
-    public enum PlaybackParams
-    {
-        volume,
-        pitch,
-        transposition
-    }
-
-    [Serializable]
-    public struct MusicLayer
-    {
-        // A header here can be repetitive in an array. It's often better to let the parent class's editor handle titles.
-        public string name;
-        public AudioClip audioClip;
-        [Range(0f, 1f)]
-        public float activeVolume;
-        public bool activeByDefault;
-        public bool deactivateOnLoop;
-        public bool spatialize;
-        public float spatialBlend;
-        public AudioMixerGroup targetMixer;
-    }
-
-    // This struct doesn't appear in the AltifoxMusic inspector but is kept for context.
-    public struct MusicFlag
-    {
-        public string name;
-        public int measure;
-        public int beat;
-    }
-
-    public enum MusicDivision
-    {
-        instant,
-        beat,
-        measure
-    }
-
     [CreateAssetMenu(fileName = "AltifoxMusic", menuName = "AltifoxMusic", order = 0)]
     public class AltifoxMusic : ScriptableObject
     {

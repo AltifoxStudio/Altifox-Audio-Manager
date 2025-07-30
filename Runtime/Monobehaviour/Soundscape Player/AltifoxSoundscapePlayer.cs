@@ -12,8 +12,36 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         [Tooltip("Assign your AltifoxSoundscape ScriptableObject here.")]
         public AltifoxSoundscape soundscape;
+
+        // This one will be used for the surround ambiances
+        // for the OneShot Effects, the audio sources are assigned at runtime and released when finished
+        public Dictionary<string, AltifoxAudioSourceBase> ambianceLayers = new Dictionary<string, AltifoxAudioSourceBase>();
         public bool drawEditorGizmo = true;
-        
+        public bool playOnAwake = true;
+        public bool useDoubleBuffering = true;
+
+        private void Play()
+        {
+            // Part 1: Surround sounds
+            for (int i = 0; i < soundscape.soundScapeComponents.Length; i++)
+            {
+                if (soundscape.soundScapeComponents[i].type == SFXType.surroundPersistent)
+                {
+                    AltifoxAudioSourceBase newAS;
+                    if (!useDoubleBuffering)
+                    {
+                        newAS = AltifoxAudioManager.Instance.RequestSBAltifoxAudioSource();
+                    }
+                    else
+                    {
+                        newAS = AltifoxAudioManager.Instance.RequestDBAltifoxAudioSource();
+                    }
+                    newAS.clip = soundscape.soundScapeComponents[i].sfx.GetAudioClip();
+                    newAS.spatialize = false;
+                }
+            }
+        }
+
 #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {

@@ -83,41 +83,45 @@ namespace AltifoxStudio.AltifoxAudioManager
         /// </summary>
         public void Play()
         {
-            for (int i = 0; i < altifoxMusicSO.musicLayers.Length; i++)
+            if (isPlaying)
             {
-                AltifoxAudioSourceBase newAS;
-                MusicLayer layerConfig = altifoxMusicSO.musicLayers[i];
-                if (!useDoubleBuffering)
-                {
-                    newAS = AltifoxAudioManager.Instance.RequestSBAltifoxAudioSource();
-                }
-                else
-                {
-                    newAS = AltifoxAudioManager.Instance.RequestDBAltifoxAudioSource();
-                }
-
-                newAS.clip = layerConfig.audioClip;
-                newAS.spatialize = layerConfig.spatialize;
-                newAS.spatialBlend = layerConfig.spatialBlend;
-
-                if (layerConfig.activeByDefault)
-                {
-                    newAS.volume = 1f;
-                }
-                else
-                {
-                    newAS.volume = 0f;
-                }
-                // Might not use this a lot, I don't know, but looping is nice to have
-                if (altifoxMusicSO.loop)
-                {
-                    looping = true;
-                }
-
-                musicLayers[layerConfig.name] = newAS;
-                layerIsActive[layerConfig.name] = true;
-                newAS.Play();
+                return;
             }
+            for (int i = 0; i < altifoxMusicSO.musicLayers.Length; i++)
+                {
+                    AltifoxAudioSourceBase newAS;
+                    MusicLayer layerConfig = altifoxMusicSO.musicLayers[i];
+                    if (!useDoubleBuffering)
+                    {
+                        newAS = AltifoxAudioManager.Instance.RequestSBAltifoxAudioSource();
+                    }
+                    else
+                    {
+                        newAS = AltifoxAudioManager.Instance.RequestDBAltifoxAudioSource();
+                    }
+
+                    newAS.clip = layerConfig.audioClip;
+                    newAS.spatialize = layerConfig.spatialize;
+                    newAS.spatialBlend = layerConfig.spatialBlend;
+
+                    if (layerConfig.activeByDefault)
+                    {
+                        newAS.volume = 1f;
+                    }
+                    else
+                    {
+                        newAS.volume = 0f;
+                    }
+                    // Might not use this a lot, I don't know, but looping is nice to have
+                    if (altifoxMusicSO.loop)
+                    {
+                        looping = true;
+                    }
+
+                    musicLayers[layerConfig.name] = newAS;
+                    layerIsActive[layerConfig.name] = true;
+                    newAS.Play();
+                }
             dspTimeAtPlay = AudioSettings.dspTime;
             Coroutine loopTracking = StartCoroutine(CR_ManageLoopRegion(altifoxMusicSO.GetLoopStartTime(), altifoxMusicSO.GetLoopEndTime()));
             isPlaying = true;
@@ -142,7 +146,7 @@ namespace AltifoxStudio.AltifoxAudioManager
                 AltifoxAudioSourceBase audioSource = layer.Value;
                 audioSource.UnPause();
             }
-            isPlaying = false;
+            isPlaying = true;
         }
 
         /// <summary>
@@ -155,6 +159,12 @@ namespace AltifoxStudio.AltifoxAudioManager
         public void FadeOutLayers(string[] layersToFade, float duration, InterpolationType transition, bool releaseSources = true)
         {
             Coroutine newTransition = StartCoroutine(CR_FadeOutLayers(layersToFade, duration, altifoxMusicSO.transitions, releaseSources));
+        }
+
+        public void FadeOutAllLayers()
+        {
+            string[] layersToFade = { "All" };
+            Coroutine fadeOut = StartCoroutine(CR_FadeOutLayers(layersToFade, 2, altifoxMusicSO.transitions, true));
         }
 
         public void SetLayerActive(string layerName, bool active, bool fade = true)

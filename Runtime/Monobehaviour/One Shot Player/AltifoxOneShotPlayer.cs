@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.EventSystems;
 
 namespace AltifoxStudio.AltifoxAudioManager
 {
@@ -43,6 +44,7 @@ namespace AltifoxStudio.AltifoxAudioManager
         OnApplicationPause = 1 << 23,
         OnUpdate = 1 << 24,
         OnFixedUpdate = 1 << 25,
+        OnPointerEnter = 1 << 26,
     }
 
     public partial class AltifoxOneShotPlayer : MonoBehaviour
@@ -72,132 +74,137 @@ namespace AltifoxStudio.AltifoxAudioManager
         #region Unity Event Handlers
         void OnEnable()
         {
-            if ((playOnEvents & PlayOn.Enable) != 0) Play();
+            if ((playOnEvents & PlayOn.Enable) != 0) PreloadAndPlay();
         }
 
         void OnDisable()
         {
-            if ((playOnEvents & PlayOn.Disable) != 0) Play();
+            if ((playOnEvents & PlayOn.Disable) != 0) PreloadAndPlay();
         }
 
         void OnDestroy()
         {
-            if ((playOnEvents & PlayOn.Destroy) != 0) Play();
+            if ((playOnEvents & PlayOn.Destroy) != 0) PreloadAndPlay();
         }
 
         void OnTriggerEnter(Collider other)
         {
-            if ((playOnEvents & PlayOn.OnTriggerEnter) != 0) Play();
+            if ((playOnEvents & PlayOn.OnTriggerEnter) != 0) PreloadAndPlay();
         }
 
         void OnTriggerExit(Collider other)
         {
-            if ((playOnEvents & PlayOn.OnTriggerExit) != 0) Play();
+            if ((playOnEvents & PlayOn.OnTriggerExit) != 0) PreloadAndPlay();
         }
 
         void OnTriggerStay(Collider other)
         {
-            if ((playOnEvents & PlayOn.OnTriggerStay) != 0) Play();
+            if ((playOnEvents & PlayOn.OnTriggerStay) != 0) PreloadAndPlay();
         }
 
         void OnCollisionEnter(Collision collision)
         {
-            if ((playOnEvents & PlayOn.OnCollisionEnter) != 0) Play();
+            if ((playOnEvents & PlayOn.OnCollisionEnter) != 0) PreloadAndPlay();
         }
 
         void OnCollisionExit(Collision collision)
         {
-            if ((playOnEvents & PlayOn.OnCollisionExit) != 0) Play();
+            if ((playOnEvents & PlayOn.OnCollisionExit) != 0) PreloadAndPlay();
         }
 
         void OnCollisionStay(Collision collision)
         {
-            if ((playOnEvents & PlayOn.OnCollisionStay) != 0) Play();
+            if ((playOnEvents & PlayOn.OnCollisionStay) != 0) PreloadAndPlay();
         }
 
         void OnControllerColliderHit(ControllerColliderHit hit)
         {
-            if ((playOnEvents & PlayOn.OnControllerColliderHit) != 0) Play();
+            if ((playOnEvents & PlayOn.OnControllerColliderHit) != 0) PreloadAndPlay();
         }
 
         void OnMouseDown()
         {
-            if ((playOnEvents & PlayOn.OnMouseDown) != 0) Play();
+            if ((playOnEvents & PlayOn.OnMouseDown) != 0) PreloadAndPlay();
         }
 
         void OnMouseDrag()
         {
-            if ((playOnEvents & PlayOn.OnMouseDrag) != 0) Play();
+            if ((playOnEvents & PlayOn.OnMouseDrag) != 0) PreloadAndPlay();
         }
 
         void OnMouseEnter()
         {
-            if ((playOnEvents & PlayOn.OnMouseEnter) != 0) Play();
+            if ((playOnEvents & PlayOn.OnMouseEnter) != 0) PreloadAndPlay();
         }
 
         void OnMouseExit()
         {
-            if ((playOnEvents & PlayOn.OnMouseExit) != 0) Play();
+            if ((playOnEvents & PlayOn.OnMouseExit) != 0) PreloadAndPlay();
         }
 
         void OnMouseOver()
         {
-            if ((playOnEvents & PlayOn.OnMouseOver) != 0) Play();
+            if ((playOnEvents & PlayOn.OnMouseOver) != 0) PreloadAndPlay();
         }
 
         void OnMouseUp()
         {
-            if ((playOnEvents & PlayOn.OnMouseUp) != 0) Play();
+            if ((playOnEvents & PlayOn.OnMouseUp) != 0) PreloadAndPlay();
         }
 
         void OnMouseUpAsButton()
         {
-            if ((playOnEvents & PlayOn.OnMouseUpAsButton) != 0) Play();
+            if ((playOnEvents & PlayOn.OnMouseUpAsButton) != 0) PreloadAndPlay();
         }
 
         void OnParticleCollision(GameObject other)
         {
-            if ((playOnEvents & PlayOn.OnParticleCollision) != 0) Play();
+            if ((playOnEvents & PlayOn.OnParticleCollision) != 0) PreloadAndPlay();
         }
 
         void OnParticleTrigger()
         {
-            if ((playOnEvents & PlayOn.OnParticleTrigger) != 0) Play();
+            if ((playOnEvents & PlayOn.OnParticleTrigger) != 0) PreloadAndPlay();
         }
 
         void OnValidate()
         {
-            if ((playOnEvents & PlayOn.OnValidate) != 0) Play();
+            if ((playOnEvents & PlayOn.OnValidate) != 0) PreloadAndPlay();
         }
 
         void OnBecameVisible()
         {
-            if ((playOnEvents & PlayOn.OnBecameVisible) != 0) Play();
+            if ((playOnEvents & PlayOn.OnBecameVisible) != 0) PreloadAndPlay();
         }
 
         void OnBecameInvisible()
         {
-            if ((playOnEvents & PlayOn.OnBecameInvisible) != 0) Play();
+            if ((playOnEvents & PlayOn.OnBecameInvisible) != 0) PreloadAndPlay();
         }
 
         void OnApplicationPause(bool pauseStatus)
         {
             // Note: This fires when the app is paused AND when it is resumed.
-            if ((playOnEvents & PlayOn.OnApplicationPause) != 0) Play();
+            if ((playOnEvents & PlayOn.OnApplicationPause) != 0) PreloadAndPlay();
         }
 
         void Update()
         {
             // Warning: This will attempt to play the sound every single frame.
             // Use with caution and ensure your altifoxSFX.CanPlayNow() has proper cooldown logic.
-            if ((playOnEvents & PlayOn.OnUpdate) != 0) Play();
+            if ((playOnEvents & PlayOn.OnUpdate) != 0) PreloadAndPlay();
         }
 
         void FixedUpdate()
         {
             // Warning: This will attempt to play the sound every fixed physics step.
             // Use with caution and ensure your altifoxSFX.CanPlayNow() has proper cooldown logic.
-            if ((playOnEvents & PlayOn.OnFixedUpdate) != 0) Play();
+            if ((playOnEvents & PlayOn.OnFixedUpdate) != 0) PreloadAndPlay();
+        }
+
+        void OnPointerEnter()
+        {
+            if ((playOnEvents & PlayOn.OnPointerEnter) != 0) PreloadAndPlay();
         }
         #endregion
 
@@ -266,6 +273,9 @@ namespace AltifoxStudio.AltifoxAudioManager
 
                 // Assign constant properties
                 assignedAudioSource.spatialBlend = altifoxSFX.GetSpatialBlend();
+                assignedAudioSource.minDistance = altifoxSFX.GetMinSpatialDistance();
+                assignedAudioSource.maxDistance = altifoxSFX.GetMaxSpatialDistance();
+                assignedAudioSource.spatialize = altifoxSFX.GetSpatializeBool();
 
                 Loaded = true;
                 IDCount++;
@@ -274,7 +284,15 @@ namespace AltifoxStudio.AltifoxAudioManager
             return CANNOT_PLAY;
         }
 
+        public void PreloadAndPlay()
+        {
+            if (altifoxSFX.CanPlayNow())
+            {
+                int audioSourceID = PreloadClip();
+                Play();
+            }
 
+        }
 
         /// <summary>
         /// Plays the sound. If not preloaded, it will load and play immediately.

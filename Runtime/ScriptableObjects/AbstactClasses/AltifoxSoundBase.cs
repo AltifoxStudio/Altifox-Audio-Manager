@@ -11,5 +11,10 @@ namespace AltifoxStudio.AltifoxAudioManager
         public abstract void TagPlayTime();
         public abstract AudioClip GetAudioClip();
         public abstract AltifoxSFX GetSFXObject();
+
+        public abstract bool GetSpatializeBool();
+
+        public abstract float GetMaxSpatialDistance();
+        public abstract float GetMinSpatialDistance();
     }
 }

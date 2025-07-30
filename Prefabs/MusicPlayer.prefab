@@ -45,9 +45,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 847c5fc8905244021a796b38faca3d4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playlist: {fileID: 0}
+  playlist: {fileID: 11400000, guid: 22bca0a07aedd044e91dc6c5785219c8, type: 2}
   altifoxMusicSO: {fileID: 0}
   playOnAwake: 1
+  useDoubleBuffering: 1
+  looping: 0
 --- !u!114 &7144084404992108321
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60,6 +62,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86763e8f05e1d644baafc1d015a826b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  parameter: {fileID: 0}
-  affectedLayerNames: []
-  automations: []
+  parameter: {fileID: 11400000, guid: abdfc5a7ed2b5ff48b16e086fd207ae1, type: 2}
+  automations:
+  - affectedLayerName: Drums
+    audioSourceParameter: 0
+    startKey: {x: 0, y: 0}
+    endKey: {x: 10, y: 1}
+    interpolationType: 1
+  - affectedLayerName: Pads
+    audioSourceParameter: 0
+    startKey: {x: 100, y: 0}
+    endKey: {x: 200, y: 1}
+    interpolationType: 1
+  - affectedLayerName: Lead
+    audioSourceParameter: 0
+    startKey: {x: 300, y: 0}
+    endKey: {x: 400, y: 1}
+    interpolationType: 1
+  - affectedLayerName: Arp
+    audioSourceParameter: 0
+    startKey: {x: 350, y: 0}
+    endKey: {x: 600, y: 1}
+    interpolationType: 1

@@ -63,6 +63,7 @@ namespace AltifoxStudio.AltifoxAudioManager
                     }
                 }
             }
+            isPlaying = false;
 
         }
 
@@ -85,33 +86,23 @@ namespace AltifoxStudio.AltifoxAudioManager
                 }
 
             }
-            bool first = true;
             float loopEndTime = (loopEnd != NO_CUSTOM_LOOP_END) ? loopEnd : referenceSource.GetAudioSource().clip.length;
             float loopDuration = loopEndTime - loopStart;
             float firstLoopDuration  = loopEndTime;
+            float targetlooptime = firstLoopDuration;
 
             while (looping)
             {
                 double lastDspTime = AudioSettings.dspTime;
-                double progressInAudioSeconds = 0;
+                float progressInAudioSeconds = 0;
 
-                while (progressInAudioSeconds < (first ? firstLoopDuration : loopDuration))
+                while (progressInAudioSeconds < targetlooptime)
                 {
+                    //Debug.Log($"Looping for now: target: {targetlooptime}");
                     yield return null;
-                    double currentDspTime = AudioSettings.dspTime;
-                    float currentPitch = referenceSource.pitch;
-
-                    if (currentPitch <= 0)
-                    {
-                        lastDspTime = currentDspTime;
-                        continue;
-                    }
-
-                    double dspDeltaTime = currentDspTime - lastDspTime;
-                    progressInAudioSeconds += dspDeltaTime * currentPitch;
-                    lastDspTime = currentDspTime;
+                    progressInAudioSeconds = referenceSource.time;
                 }
-
+                //targetlooptime = loopDuration;
                 for (int i = 0; i < altifoxMusicSO.musicLayers.Length; i++)
                 {
                     MusicLayer layerConfig = altifoxMusicSO.musicLayers[i];
@@ -127,7 +118,6 @@ namespace AltifoxStudio.AltifoxAudioManager
                     if (!useDoubleBuffering)
                     {
                         source.time = restartTime;
-                        first = false;
                         if (!source.isPlaying)
                         {
                             source.UnPause();
@@ -137,7 +127,6 @@ namespace AltifoxStudio.AltifoxAudioManager
                     {
                         source.Flip();
                         source.PrepareNextSource(loopStart);
-                        first = false;
                     }
 
                 }
