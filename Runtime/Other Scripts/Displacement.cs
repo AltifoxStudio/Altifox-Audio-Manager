@@ -18,7 +18,7 @@ public class Displacement : MonoBehaviour
     void FixedUpdate()
     {
         float sinePost = (Mathf.Sin(angle) + 1f)/2;
-        Debug.Log(sinePost);
+        //Debug.Log(sinePost);
         Vector3 newPosition = transform.position;
         newPosition.x = Mathf.Lerp(minXValue, maxXValue, sinePost);
         newPosition.y = 0f;
