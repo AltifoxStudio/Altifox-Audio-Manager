@@ -89,7 +89,6 @@ namespace AltifoxStudio.AltifoxAudioManager
                     yield break;
                 }
 
-                Debug.Log("End of loop");
                 float restartTime = loopStart;
 
                 if (!useDoubleBuffering)
