@@ -15,7 +15,7 @@ namespace AltifoxStudio.AltifoxAudioManager
     /// <summary>
     /// 
     /// </summary>
-    [RequireComponent(typeof(AltifoxPersistentPlayer))]
+    [RequireComponent(typeof(AltifoxPersistentSFXPlayer))]
     public class AltifoxPersistentSFXAutomation : MonoBehaviour
     {
         public AltifoxParameterBase parameter;
@@ -41,7 +41,7 @@ namespace AltifoxStudio.AltifoxAudioManager
         private void UpdateParameters(float v)
         {
             System.Func<Vector2, Vector2, float, float> interpolationFunction;
-            foreach (Automation automation in automations)
+            foreach (SFXAutomation automation in automations)
             {
                 interpolationFunction = Interpolations.GetInterpolationFuncRef(automation.interpolationType);
                 switch (automation.audioSourceParameter)
