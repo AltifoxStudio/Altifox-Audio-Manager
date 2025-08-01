@@ -31,7 +31,7 @@ namespace AltifoxStudio.AltifoxAudioManager
             }
 
             Instance = this;
-            DontDestroyOnLoad(this.gameObject);
+            //DontDestroyOnLoad(this.gameObject);
             InitAltifoxAudioSources();
         }
 

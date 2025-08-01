@@ -2,8 +2,11 @@ using UnityEngine;
 using System;
 using UnityEngine.Audio;
 
+
+
 namespace AltifoxStudio.AltifoxAudioManager
 {
+
     [CreateAssetMenu(fileName = "AltifoxMusic", menuName = "AltifoxMusic", order = 0)]
     public class AltifoxMusic : ScriptableObject
     {
@@ -20,29 +23,11 @@ namespace AltifoxStudio.AltifoxAudioManager
         [Min(1)]
         public int beatsPerMeasure = 4;
 
-        [Header("Looping")]
-        [Tooltip("If enabled, the music will loop between the specified start and end points.")]
-        public bool loop;
+        // [Header("Looping")]
+        // [Tooltip("If enabled, the music will loop between the specified start and end points.")]
+        // public bool loop;
 
-        // These fields are only relevant if 'loop' is true. A custom editor can hide them conditionally.
-        [Tooltip("The measure where the loop begins (1-indexed).")]
-        [Min(1)]
-        public int measureAtLoopStart = 1;
-
-        [Tooltip("The beat within the start measure to begin the loop (1-indexed). Set to 0 to start at the beginning of the measure.")]
-        [Min(0)]
-        public int beatAtLoopStart = 0;
-
-        [Space(5)] // Adds a little vertical space
-
-        [Tooltip("The measure where the loop ends (inclusive).")]
-        [Min(1)]
-        public int measureAtLoopEnd = 8;
-
-        [Tooltip("The beat within the end measure to end the loop (1-indexed). Set to 0 to end at the conclusion of the measure.")]
-        [Min(0)]
-        public int beatAtLoopEnd = 0;
-
+        public LoopRegion[] loopRegions;
 
         [Header("Transitions & Switching")]
         [Tooltip("The curve shape for fades and transitions between layers.")]
@@ -56,26 +41,28 @@ namespace AltifoxStudio.AltifoxAudioManager
         public MusicDivision switchOn;
 
         // --- METHODS (unchanged) ---
-        public float GetLoopStartTime()
+        public float GetLoopStartTime(int loopRegionIndex)
         {
-            if (trackBeatPerMinute <= 0) return 0f;
-            float secondsPerBeat = 60.0f / trackBeatPerMinute;
-            float totalBeats = (measureAtLoopStart) * beatsPerMeasure + (beatAtLoopStart > 0 ? beatAtLoopStart - 1 : 0);
+            LoopRegion loopRegion = loopRegions[loopRegionIndex];
+            if (loopRegion.sectionBeatsPerMinute <= 0) return 0f;
+            float secondsPerBeat = 60.0f / loopRegion.sectionBeatsPerMinute;
+            float totalBeats = (loopRegion.measureAtLoopStart) * loopRegion.sectionBeatsPerMeasure+ (loopRegion.beatAtLoopStart > 0 ? loopRegion.beatAtLoopStart - 1 : 0);
             return totalBeats * secondsPerBeat;
         }
 
-        public float GetLoopEndTime()
+        public float GetLoopEndTime(int loopRegionIndex)
         {
-            if (trackBeatPerMinute <= 0) return 0f;
-            float secondsPerBeat = 60.0f / trackBeatPerMinute;
+            LoopRegion loopRegion = loopRegions[loopRegionIndex];
+            if (loopRegion.sectionBeatsPerMinute <= 0) return 0f;
+            float secondsPerBeat = 60.0f /  loopRegion.sectionBeatsPerMinute;
             float totalBeats;
-            if (beatAtLoopEnd > 0)
+            if (loopRegion.beatAtLoopEnd > 0)
             {
-                totalBeats = (measureAtLoopEnd - 1) * beatsPerMeasure + beatAtLoopEnd;
+                totalBeats = (loopRegion.measureAtLoopEnd - 1) * loopRegion.sectionBeatsPerMeasure + loopRegion.beatAtLoopEnd;
             }
             else
             {
-                totalBeats = measureAtLoopEnd * beatsPerMeasure;
+                totalBeats = loopRegion.measureAtLoopEnd * loopRegion.sectionBeatsPerMeasure;
             }
             return totalBeats * secondsPerBeat;
         }

@@ -17,7 +17,50 @@ namespace AltifoxStudio.AltifoxAudioManager
         public int beat;
     }
 
-public class PlaybackTools
+    [Serializable]
+    public class LoopRegion
+    {
+        public string name;
+        public int sectionBeatsPerMeasure;
+        public float sectionBeatsPerMinute;
+
+        [Header("Loop Start")]
+        public int measureAtLoopStart;
+        public int beatAtLoopStart;
+
+        [Header("Loop End")]
+        public int measureAtLoopEnd;
+        public int beatAtLoopEnd;
+
+        public MusicDivision exitLoopOn;
+
+        public float GetLoopStartTime()
+        {
+            if (sectionBeatsPerMinute <= 0) return 0f;
+            float secondsPerBeat = 60.0f / sectionBeatsPerMinute;
+            float totalBeats = measureAtLoopStart * sectionBeatsPerMeasure+ (beatAtLoopStart > 0 ? beatAtLoopStart - 1 : 0);
+            return totalBeats * secondsPerBeat;
+        }
+
+        public float GetLoopEndTime()
+        {
+            if (sectionBeatsPerMinute <= 0) return 0f;
+            float secondsPerBeat = 60.0f / sectionBeatsPerMinute;
+            float totalBeats;
+            if (beatAtLoopEnd > 0)
+            {
+                totalBeats = (measureAtLoopEnd - 1) * sectionBeatsPerMeasure + beatAtLoopEnd;
+            }
+            else
+            {
+                totalBeats = measureAtLoopEnd * sectionBeatsPerMeasure;
+            }
+            return totalBeats * secondsPerBeat;
+        }
+
+    }
+
+    public class PlaybackTools
     {
         public enum PlaybackType
         {

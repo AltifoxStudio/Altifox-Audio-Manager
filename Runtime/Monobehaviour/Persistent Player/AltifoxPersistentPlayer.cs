@@ -35,6 +35,11 @@ namespace AltifoxStudio.AltifoxAudioManager
         public bool looping;
         private const float NO_CUSTOM_LOOP_START = 0f;
         private const float NO_CUSTOM_LOOP_END = -1f;
+        private LoopRegion[] loopRegions;
+        public bool exitLoopFlag = false;
+        public bool stopLoopingFullFlag = false;
+        public int aimForLoopID = -1;
+        public int currentLoopRegion = 0;
         /// <summary>
         /// Very simple awake, with singleton pattern
         /// the idea is to populate the playlist from the playlist Scriptable Object
@@ -49,7 +54,7 @@ namespace AltifoxStudio.AltifoxAudioManager
             }
 
             Instance = this;
-            DontDestroyOnLoad(this.gameObject);
+            //DontDestroyOnLoad(this.gameObject);
 
             // initialisation du dictionaire pour la playlist
             for (int i = 0; i < playlist.Items.Length; i++)
@@ -72,6 +77,8 @@ namespace AltifoxStudio.AltifoxAudioManager
                 layerPlayVolume.Add(layerConfig.name, layerConfig.activeVolume);
                 layerIsActive.Add(layerConfig.name, false);
             }
+            loopRegions = altifoxMusicSO.loopRegions;
+
             if (playOnAwake)
             {
                 Play();
@@ -112,18 +119,16 @@ namespace AltifoxStudio.AltifoxAudioManager
                     {
                         newAS.volume = 0f;
                     }
-                    // Might not use this a lot, I don't know, but looping is nice to have
-                    if (altifoxMusicSO.loop)
-                    {
-                        looping = true;
-                    }
 
                     musicLayers[layerConfig.name] = newAS;
                     layerIsActive[layerConfig.name] = true;
                     newAS.Play();
                 }
             dspTimeAtPlay = AudioSettings.dspTime;
-            Coroutine loopTracking = StartCoroutine(CR_ManageLoopRegion(altifoxMusicSO.GetLoopStartTime(), altifoxMusicSO.GetLoopEndTime()));
+            if (altifoxMusicSO.loopRegions.Length > 0)
+            {
+                Coroutine loopTracking = StartCoroutine(CR_ManageLoopRegion());
+            }
             isPlaying = true;
         }
 
