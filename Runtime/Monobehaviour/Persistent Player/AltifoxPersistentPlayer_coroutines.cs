@@ -74,11 +74,11 @@ namespace AltifoxStudio.AltifoxAudioManager
             aimForLoopID = -1;
             float loopStart = loopRegions[currentLoopRegion].GetLoopStartTime();
             float loopEnd = loopRegions[currentLoopRegion].GetLoopEndTime();
-            Debug.Log($"Starting Loop ! from time = {loopStart} to time = {loopEnd}");
+            //Debug.Log($"Starting Loop ! from time = {loopStart} to time = {loopEnd}");
             AltifoxAudioSourceBase referenceSource = musicLayers.Values.FirstOrDefault();
             if (referenceSource == null || referenceSource.GetAudioSource().clip == null)
             {
-                Debug.LogError("Reference source or clip is missing!");
+                //Debug.LogError("Reference source or clip is missing!");
                 yield break;
             }
 
@@ -95,7 +95,7 @@ namespace AltifoxStudio.AltifoxAudioManager
             float firstLoopDuration  = loopEndTime;
             float targetlooptime = firstLoopDuration;
 
-            Debug.Log($"End of Loop setup ! loop duration = {loopDuration} firstLoopDuration = {firstLoopDuration}, target loop time = {targetlooptime}");
+            //Debug.Log($"End of Loop setup ! loop duration = {loopDuration} firstLoopDuration = {firstLoopDuration}, target loop time = {targetlooptime}");
             while (!stopLoopingFullFlag)
             {
                 while (!exitLoopFlag)
@@ -105,7 +105,7 @@ namespace AltifoxStudio.AltifoxAudioManager
                         exitLoopFlag = true;
                     }
 
-                    Debug.Log($"continuing Loop ! from time = {loopStart} to time = {loopEndTime}, time = {referenceSource.time}");
+                    //Debug.Log($"continuing Loop ! from time = {loopStart} to time = {loopEndTime}, time = {referenceSource.time}");
                     double lastDspTime = AudioSettings.dspTime;
                     float progressInAudioSeconds = 0;
 
