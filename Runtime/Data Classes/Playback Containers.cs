@@ -24,6 +24,10 @@ namespace AltifoxStudio.AltifoxAudioManager
         public int sectionBeatsPerMeasure;
         public float sectionBeatsPerMinute;
 
+        [Header("Transition Region")]
+        public int measureAtTransitionStart;
+        public int beatAtTransitionStart;
+
         [Header("Loop Start")]
         public int measureAtLoopStart;
         public int beatAtLoopStart;
@@ -34,11 +38,20 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         public MusicDivision exitLoopOn;
 
+
+        public float GetTransitionStartTime()
+        {
+            if (sectionBeatsPerMinute <= 0) return 0f;
+            float secondsPerBeat = 60.0f / sectionBeatsPerMinute;
+            float totalBeats = measureAtTransitionStart * sectionBeatsPerMeasure+ (beatAtTransitionStart > 0 ? beatAtTransitionStart - 1 : 0);
+            return totalBeats * secondsPerBeat;
+        }
+
         public float GetLoopStartTime()
         {
             if (sectionBeatsPerMinute <= 0) return 0f;
             float secondsPerBeat = 60.0f / sectionBeatsPerMinute;
-            float totalBeats = measureAtLoopStart * sectionBeatsPerMeasure+ (beatAtLoopStart > 0 ? beatAtLoopStart - 1 : 0);
+            float totalBeats = measureAtLoopStart * sectionBeatsPerMeasure + (beatAtLoopStart > 0 ? beatAtLoopStart - 1 : 0);
             return totalBeats * secondsPerBeat;
         }
 

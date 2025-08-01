@@ -153,13 +153,14 @@ namespace AltifoxStudio.AltifoxAudioManager
                     exitLoopFlag = false;
                     loopStart = loopRegions[currentLoopRegion].GetLoopStartTime();
                     loopEnd = loopRegions[currentLoopRegion].GetLoopEndTime();
+                    float transitionStart = loopRegions[currentLoopRegion].GetTransitionStartTime();
                     loopEndTime = (loopEnd != NO_CUSTOM_LOOP_END) ? loopEnd : referenceSource.GetAudioSource().clip.length;
                     loopDuration = loopEndTime - loopStart;
                     firstLoopDuration = loopEndTime;
                     targetlooptime = firstLoopDuration;
                     foreach (AltifoxAudioSourceBase source in musicLayers.Values)
                     {
-                        source.time = loopStart;
+                        source.time = transitionStart;
                     }
                 }
                 else
