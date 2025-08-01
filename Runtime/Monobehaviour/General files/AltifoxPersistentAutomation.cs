@@ -34,7 +34,6 @@ namespace AltifoxStudio.AltifoxAudioManager
         private void Start()
         {
             altifoxPlayer = GetComponent<AltifoxPersistentPlayer>();
-
         }
 
         private void OnEnable()
