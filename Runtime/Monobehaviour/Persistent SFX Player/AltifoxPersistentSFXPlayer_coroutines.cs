@@ -71,15 +71,22 @@ namespace AltifoxStudio.AltifoxAudioManager
             {
                 // SÉCURITÉ : La condition de la boucle vérifie maintenant si l'audio est en lecture.
                 // C'est une façon plus propre d'attendre que d'utiliser une boucle while manuelle.
-                yield return new WaitUntil(() => audioSource.time >= targetlooptime || !audioSource.isPlaying);
+                //yield return new WaitUntil(() => audioSource.time >= targetlooptime || !audioSource.isPlaying);
 
                 // Si on sort de l'attente parce que la lecture s'est arrêtée (et non parce qu'on a atteint la fin de la boucle),
                 // on quitte la coroutine pour éviter une boucle infinie.
-                if (!audioSource.isPlaying && audioSource.time < targetlooptime)
+                // if (!audioSource.isPlaying && audioSource.time < targetlooptime)
+                // {
+                //     Debug.LogWarning("AudioSource stopped playing unexpectedly. Exiting loop coroutine.");
+                //     yield break;
+                // }
+
+                if (audioSource.time < targetlooptime)
                 {
-                    Debug.LogWarning("AudioSource stopped playing unexpectedly. Exiting loop coroutine.");
+                    //Debug.LogWarning("AudioSource stopped playing unexpectedly. Exiting loop coroutine.");
                     yield break;
                 }
+
 
                 float restartTime = loopStart;
 
