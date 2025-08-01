@@ -66,12 +66,13 @@ namespace AltifoxStudio.AltifoxAudioManager
             // float loopDuration = loopEndTime - loopStart; 
             // float firstLoopDuration = loopEndTime;
             float targetlooptime = loopEndTime;
-
+            // Debug.Log($"Looping between {loopStart} and {loopEndTime}");
+            // Debug.Log(looping);
             while (looping)
             {
                 // SÉCURITÉ : La condition de la boucle vérifie maintenant si l'audio est en lecture.
                 // C'est une façon plus propre d'attendre que d'utiliser une boucle while manuelle.
-                //yield return new WaitUntil(() => audioSource.time >= targetlooptime || !audioSource.isPlaying);
+                yield return new WaitUntil(() => audioSource.time >= targetlooptime);
 
                 // Si on sort de l'attente parce que la lecture s'est arrêtée (et non parce qu'on a atteint la fin de la boucle),
                 // on quitte la coroutine pour éviter une boucle infinie.
@@ -83,11 +84,12 @@ namespace AltifoxStudio.AltifoxAudioManager
 
                 if (audioSource.time < targetlooptime)
                 {
+                    //Debug.Log($"current time {audioSource.time}");
                     //Debug.LogWarning("AudioSource stopped playing unexpectedly. Exiting loop coroutine.");
                     yield break;
                 }
 
-
+                Debug.Log("End of loop");
                 float restartTime = loopStart;
 
                 if (!useDoubleBuffering)
@@ -103,7 +105,7 @@ namespace AltifoxStudio.AltifoxAudioManager
                 }
 
                 // On ajuste la cible pour les boucles suivantes
-                targetlooptime = loopEndTime; 
+                targetlooptime = loopEndTime;
             }
         }
 

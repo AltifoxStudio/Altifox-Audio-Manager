@@ -222,7 +222,7 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         public void SetParameterBuffer(AudioSourceParameter paramToAutomate, float value)
         {
-            Debug.Log("Setting Parameter bu");
+            //Debug.Log("Setting Parameter bu");
             parameterBuffer.parameter = paramToAutomate;
             parameterBuffer.value = value;
         }
@@ -234,11 +234,10 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         private void ApplyParameterBuffer(AltifoxAudioSourceBase audioSource)
         {
-            Debug.Log("Applying Parameter buffer");
+            //Debug.Log("Applying Parameter buffer");
             switch (parameterBuffer.parameter)
             {
                 case AudioSourceParameter.volume:
-                    Debug.Log("Applying Volume");
                     audioSource.volume = parameterBuffer.value;
                     break;
                 case AudioSourceParameter.pitch:
@@ -320,7 +319,7 @@ namespace AltifoxStudio.AltifoxAudioManager
                         if (parameterBuffer.parameter != AudioSourceParameter.nullParameter)
                         {
                             ApplyParameterBuffer(assignedAudioSources[audioSourceID]);
-                            Debug.Log($"Audiosource values: {assignedAudioSources[audioSourceID].volume},{assignedAudioSources[audioSourceID].pitch}");
+                            //Debug.Log($"Audiosource values: {assignedAudioSources[audioSourceID].volume},{assignedAudioSources[audioSourceID].pitch}");
                         }
                         assignedAudioSources[audioSourceID].Play();
                         AltifoxAudioManager.Instance.AddReferenceInCount(altifoxSFX.GetSFXObject());
