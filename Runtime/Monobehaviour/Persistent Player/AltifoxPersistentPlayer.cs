@@ -80,10 +80,11 @@ namespace AltifoxStudio.AltifoxAudioManager
                 {
                     StopCoroutine(loopTracking);
                 }
-                Debug.Log("Freeze ?");
+
                 initPlayer();
                 Debug.Log("UnFreeze ?");
                 StartCoroutine(CR_PlayDelayed(playDelay));
+                Debug.Log("Freeze ?");
             }
 
         }
