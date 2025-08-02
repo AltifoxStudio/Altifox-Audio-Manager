@@ -51,7 +51,7 @@ namespace AltifoxStudio.AltifoxAudioManager
             System.Func<Vector2, Vector2, float, float> interpolationFunction;
             foreach (Automation automation in automations)
             {
-                if (altifoxPlayer.playConfigCurrent.musicLayers.TryGetValue(automation.affectedLayerName, out AltifoxAudioSourceBase audioSource))
+                if (altifoxPlayer.tracksConfig[altifoxPlayer.altifoxMusicSO.name].musicLayers.TryGetValue(automation.affectedLayerName, out AltifoxAudioSourceBase audioSource))
                 {
 
                     interpolationFunction = Interpolations.GetInterpolationFuncRef(automation.interpolationType);
@@ -73,7 +73,7 @@ namespace AltifoxStudio.AltifoxAudioManager
                 }
                 else if (automation.affectedLayerName == "All")
                 {
-                    foreach (AltifoxAudioSourceBase AS in altifoxPlayer.playConfigCurrent.musicLayers.Values)
+                    foreach (AltifoxAudioSourceBase AS in altifoxPlayer.tracksConfig[altifoxPlayer.altifoxMusicSO.name].musicLayers.Values)
                     {
                         interpolationFunction = Interpolations.GetInterpolationFuncRef(automation.interpolationType);
                         switch (automation.audioSourceParameter)

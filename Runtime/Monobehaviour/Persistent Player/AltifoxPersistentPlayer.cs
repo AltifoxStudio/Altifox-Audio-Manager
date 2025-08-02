@@ -21,23 +21,23 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         public AltifoxPlaylist playlist;
 
+        private bool swappedOnce = false;
+
         // I hide this in inspector cause it's just a container that will be loaded with the 
         // currently playing music
         [HideInInspector]
         public AltifoxMusic altifoxMusicSO;
+        public string currentPlayingTrack;
         private AltifoxMusic altifoxMusicSO_Temp;
         public static AltifoxPersistentPlayer Instance { get; private set; }
 
         public Dictionary<string, AltifoxMusic> playlistTracks = new Dictionary<string, AltifoxMusic>(); // this one just lists the tracks in the playlist
+        public Dictionary<string, PlayConfig> tracksConfig = new Dictionary<string, PlayConfig>();
             
 
         // ========================================================================
         // Dictionaires 
         // ========================================================================
-        public PlayConfig playConfigCurrent;
-        public PlayConfig playConfigNext;
-        private PlayConfig tempPlayConfig;
-
         public bool playOnAwake;
         public bool useDoubleBuffering = true;
         private bool isPlaying;
@@ -63,17 +63,17 @@ namespace AltifoxStudio.AltifoxAudioManager
                 Destroy(this.gameObject);
                 return;
             }
-            playConfigCurrent = new PlayConfig();
-            playConfigNext = new PlayConfig();
-            tempPlayConfig = new PlayConfig();
             Instance = this;
             //DontDestroyOnLoad(this.gameObject);
 
             // initialisation du dictionaire pour la playlist
             for (int i = 0; i < playlist.Items.Length; i++)
             {
+                PlayConfig playConfig = new PlayConfig();
+                tracksConfig.Add(playlist.Items[i].name, playConfig);
                 playlistTracks.Add(playlist.Items[i].name, playlist.Items[i].altifoxMusic);
             }
+            currentPlayingTrack = playlist.Items[0].name;
             // Puis on récupere le default depuis le ScriptableObject
             altifoxMusicSO = playlistTracks[playlist.defaultMusic];
         }
@@ -83,7 +83,7 @@ namespace AltifoxStudio.AltifoxAudioManager
             if (fadeOut)
             {
                 string[] layersToFade = { "All" };
-                Coroutine CRfadeOut = StartCoroutine(CR_FadeOutLayers(layersToFade, 2, altifoxMusicSO.transitions, true));
+                Coroutine CRfadeOut = StartCoroutine(CR_FadeOutLayers(layersToFade, 2, altifoxMusicSO.transitions, true, tracksConfig[currentPlayingTrack]));
                 try
                 {
                     StopCoroutine(loopTracking);
@@ -97,9 +97,12 @@ namespace AltifoxStudio.AltifoxAudioManager
             if (playlistTracks.TryGetValue(trackName, out AltifoxMusic nextTrack))
             {
                 altifoxMusicSO = nextTrack;
+                currentPlayingTrack = trackName;
             }
+            isPlaying = false;
+            loopRegions = altifoxMusicSO.loopRegions;
+            Play();
 
-            SwapPlayConfig();
         }
 
         private void initPlayer()
@@ -107,8 +110,8 @@ namespace AltifoxStudio.AltifoxAudioManager
             for (int i = 0; i < altifoxMusicSO.musicLayers.Length; i++)
             {
                 MusicLayer layerConfig = altifoxMusicSO.musicLayers[i];
-                playConfigCurrent.layerPlayVolume.Add(layerConfig.name, layerConfig.activeVolume);
-                playConfigCurrent.layerIsActive.Add(layerConfig.name, false);
+                tracksConfig[currentPlayingTrack].layerPlayVolume.Add(layerConfig.name, layerConfig.activeVolume);
+                tracksConfig[currentPlayingTrack].layerIsActive.Add(layerConfig.name, false);
             }
             loopRegions = altifoxMusicSO.loopRegions;
         }
@@ -129,17 +132,22 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         public void SetForPlay(string track = "none")
         {
-            PlayConfig localPlayConfig = new PlayConfig();
+            string trackName;
             if (track == "none")
             {
                 altifoxMusicSO_Temp = altifoxMusicSO;
-                localPlayConfig = playConfigCurrent;
+                trackName = currentPlayingTrack;
             }
             else
+            {
+                trackName = track;
+            }
+            PlayConfig localPlayConfig = tracksConfig[trackName];
+            bool instantPause = false;
             if (playlistTracks.TryGetValue(track, out AltifoxMusic nextTrack))
             {
                 altifoxMusicSO_Temp = nextTrack;
-                localPlayConfig = playConfigNext;
+                instantPause = true;
             }
 
             for (int i = 0; i < altifoxMusicSO_Temp.musicLayers.Length; i++)
@@ -173,25 +181,31 @@ namespace AltifoxStudio.AltifoxAudioManager
                 localPlayConfig.layerIsActive[layerConfig.name] = true;
             }
             localPlayConfig.isSet = true;
+
+            foreach (AltifoxAudioSourceBase layer in localPlayConfig.musicLayers.Values)
+            {
+                layer.Play();
+                layer.Pause();
+            }
         }
 
-        public void SwapPlayConfig()
-        {
-            float t0 = Time.time;
-            Debug.Log("Start Swapping");
-            tempPlayConfig = playConfigCurrent;
-            float t1 = Time.time;
-            playConfigCurrent = playConfigNext;
-            float t2 = Time.time;
-            playConfigNext = tempPlayConfig;
-            float t3 = Time.time;
-            loopRegions = altifoxMusicSO.loopRegions;
-            float t4 = Time.time;
-            isPlaying = false;
-            Play();
-            float t5 = Time.time;
-            Debug.Log($"times: t1: {t1-t0}, t2: {t2-t0}, t3: {t3-t0}, t4: {t4-t0}, t5: {t5-t0}");
-        }
+        // public void SwapPlayConfig()
+        // {
+        //     float t0 = Time.time;
+        //     Debug.Log("Start Swapping");
+        //     tempPlayConfig = tracksConfig[currentPlayingTrack];
+        //     float t1 = Time.time;
+        //     tracksConfig[currentPlayingTrack] = playConfigNext;
+        //     float t2 = Time.time;
+        //     playConfigNext = tempPlayConfig;
+        //     float t3 = Time.time;
+        //     loopRegions = altifoxMusicSO.loopRegions;
+        //     float t4 = Time.time;
+        //     isPlaying = false;
+        //     Play();
+        //     float t5 = Time.time;
+        //     Debug.Log($"times: t1: {t1-t0}, t2: {t2-t0}, t3: {t3-t0}, t4: {t4-t0}, t5: {t5-t0}");
+        // }
 
         /// <summary>
         /// Plays the track with the proper configuration of the different layers
@@ -203,9 +217,9 @@ namespace AltifoxStudio.AltifoxAudioManager
                 return;
             }
 
-            foreach (AltifoxAudioSourceBase layer in playConfigCurrent.musicLayers.Values)
+            foreach (AltifoxAudioSourceBase layer in tracksConfig[currentPlayingTrack].musicLayers.Values)
             {
-                layer.Play();
+                layer.UnPause();
             }
             dspTimeAtPlay = AudioSettings.dspTime;
             currentLoopRegion = 0;
@@ -218,7 +232,7 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         public void Pause()
         {
-            foreach (KeyValuePair<string, AltifoxAudioSourceBase> layer in playConfigCurrent.musicLayers)
+            foreach (KeyValuePair<string, AltifoxAudioSourceBase> layer in tracksConfig[currentPlayingTrack].musicLayers)
             {
                 string layerName = layer.Key;
                 AltifoxAudioSourceBase audioSource = layer.Value;
@@ -229,7 +243,7 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         public void UnPause()
         {
-            foreach (KeyValuePair<string, AltifoxAudioSourceBase> layer in playConfigCurrent.musicLayers)
+            foreach (KeyValuePair<string, AltifoxAudioSourceBase> layer in tracksConfig[currentPlayingTrack].musicLayers)
             {
                 string layerName = layer.Key;
                 AltifoxAudioSourceBase audioSource = layer.Value;
@@ -262,9 +276,9 @@ namespace AltifoxStudio.AltifoxAudioManager
             {
                 Play();
             }
-            if (playConfigCurrent.musicLayers.TryGetValue(layerName, out AltifoxAudioSourceBase AS))
+            if (tracksConfig[currentPlayingTrack].musicLayers.TryGetValue(layerName, out AltifoxAudioSourceBase AS))
             {
-                if (playConfigCurrent.activeTransitions.TryGetValue(layerName, out Coroutine runningTransition))
+                if (tracksConfig[currentPlayingTrack].activeTransitions.TryGetValue(layerName, out Coroutine runningTransition))
                 {
                     if (runningTransition != null)
                     {
@@ -279,11 +293,11 @@ namespace AltifoxStudio.AltifoxAudioManager
                 float targetVolume = active ? 1.0f : 0.0f;
                 float duration = altifoxMusicSO.transitionTime;
 
-                playConfigCurrent.layerPlayVolume[layerName] = active ? playConfigCurrent.layerPlayVolume[layerName] : AS.volume;
-                playConfigCurrent.layerIsActive[layerName] = active;
+                tracksConfig[currentPlayingTrack].layerPlayVolume[layerName] = active ? tracksConfig[currentPlayingTrack].layerPlayVolume[layerName] : AS.volume;
+                tracksConfig[currentPlayingTrack].layerIsActive[layerName] = active;
 
-                Coroutine newTransition = StartCoroutine(CR_TransitionLayer(AS, targetVolume * playConfigCurrent.layerPlayVolume[layerName], duration, altifoxMusicSO.transitions));
-                playConfigCurrent.activeTransitions[layerName] = newTransition;
+                Coroutine newTransition = StartCoroutine(CR_TransitionLayer(AS, targetVolume * tracksConfig[currentPlayingTrack].layerPlayVolume[layerName], duration, altifoxMusicSO.transitions));
+                tracksConfig[currentPlayingTrack].activeTransitions[layerName] = newTransition;
             }
 
             else
@@ -295,7 +309,7 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         public bool checkLayerState(string layer)
         {
-            return playConfigCurrent.layerIsActive[layer];
+            return tracksConfig[currentPlayingTrack].layerIsActive[layer];
         }
     }
 }

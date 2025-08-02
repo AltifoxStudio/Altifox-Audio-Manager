@@ -8,20 +8,25 @@ namespace AltifoxStudio.AltifoxAudioManager
 {
     public partial class AltifoxPersistentPlayer : MonoBehaviour
     {
-        private IEnumerator CR_FadeOutLayers(string[] layersToFade, float duration, InterpolationType transition, bool releaseSources = true)
+        private IEnumerator CR_FadeOutLayers(string[] layersToFade, float duration, InterpolationType transition, bool releaseSources = true, PlayConfig playConfigTarget = null)
         {
             AltifoxAudioSourceBase[] audioSources;
             List<Vector2> startPoints = new List<Vector2>();
             Vector2 zeroPoint = new Vector2(duration, 0f);
 
+            if (playConfigTarget != null)
+            {
+                playConfigTarget = tracksConfig[currentPlayingTrack];
+            }
+
             if (layersToFade[0] == "All")
-            {
-                audioSources = playConfigCurrent.musicLayers.Values.ToArray();
-            }
-            else
-            {
-                audioSources = layersToFade.Select(key => playConfigCurrent.musicLayers[key]).ToArray();
-            }
+                {
+                    audioSources = playConfigTarget.musicLayers.Values.ToArray();
+                }
+                else
+                {
+                    audioSources = layersToFade.Select(key => playConfigTarget.musicLayers[key]).ToArray();
+                }
 
             if (duration <= 0f)
             {
@@ -77,14 +82,14 @@ namespace AltifoxStudio.AltifoxAudioManager
             float loopStart = loopRegions[currentLoopRegion].GetLoopStartTime();
             float loopEnd = loopRegions[currentLoopRegion].GetLoopEndTime();
             //Debug.Log($"Starting Loop ! from time = {loopStart} to time = {loopEnd}");
-            AltifoxAudioSourceBase referenceSource = playConfigCurrent.musicLayers.Values.FirstOrDefault();
+            AltifoxAudioSourceBase referenceSource = tracksConfig[currentPlayingTrack].musicLayers.Values.FirstOrDefault();
             if (referenceSource == null || referenceSource.GetAudioSource().clip == null)
             {
                 //Debug.LogError("Reference source or clip is missing!");
                 yield break;
             }
 
-            foreach (AltifoxAudioSourceBase source in playConfigCurrent.musicLayers.Values)
+            foreach (AltifoxAudioSourceBase source in tracksConfig[currentPlayingTrack].musicLayers.Values)
             {
                 if (useDoubleBuffering)
                 {
@@ -123,12 +128,12 @@ namespace AltifoxStudio.AltifoxAudioManager
                         MusicLayer layerConfig = altifoxMusicSO.musicLayers[i];
                         if (layerConfig.deactivateOnLoop)
                         {
-                            playConfigCurrent.musicLayers[layerConfig.name].mute = true;
+                            tracksConfig[currentPlayingTrack].musicLayers[layerConfig.name].mute = true;
                         }
                     }
 
                     float restartTime = loopStart;
-                    foreach (AltifoxAudioSourceBase source in playConfigCurrent.musicLayers.Values)
+                    foreach (AltifoxAudioSourceBase source in tracksConfig[currentPlayingTrack].musicLayers.Values)
                     {
                         if (!useDoubleBuffering)
                         {
@@ -160,7 +165,7 @@ namespace AltifoxStudio.AltifoxAudioManager
                     loopDuration = loopEndTime - loopStart;
                     firstLoopDuration = loopEndTime;
                     targetlooptime = firstLoopDuration;
-                    foreach (AltifoxAudioSourceBase source in playConfigCurrent.musicLayers.Values)
+                    foreach (AltifoxAudioSourceBase source in tracksConfig[currentPlayingTrack].musicLayers.Values)
                     {
                         source.time = transitionStart;
                     }
