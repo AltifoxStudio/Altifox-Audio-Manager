@@ -66,7 +66,7 @@ namespace AltifoxStudio.AltifoxAudioManager
             altifoxMusicSO = playlistTracks[playlist.defaultMusic];
         }
 
-        public void ChangeActiveTrackTo(string trackName, bool fadeOut = true)
+        public void ChangeActiveTrackTo(string trackName, float fadeOutTime, float playDelay, bool fadeOut = true)
         {
             if (playlistTracks.TryGetValue(trackName, out AltifoxMusic nextTrack))
             {
@@ -75,19 +75,10 @@ namespace AltifoxStudio.AltifoxAudioManager
             if (fadeOut)
             {
                 string[] layersToFade = { "All" };
-                Coroutine CRfadeOut = StartCoroutine(CR_FadeOutLayers(layersToFade, 2, altifoxMusicSO.transitions, true));
-                try
-                {
-                    StopCoroutine(loopTracking);
-                }
-                catch (System.Exception)
-                {
-                  // pass
-                }
-
+                Coroutine CRfadeOut = StartCoroutine(CR_FadeOutLayers(layersToFade, fadeOutTime, altifoxMusicSO.transitions, true));
+                StopCoroutine(loopTracking);
             }
-            initPlayer();
-            Play();
+            StartCoroutine(CR_PlayDelayed(playDelay));
         }
 
         private void initPlayer()

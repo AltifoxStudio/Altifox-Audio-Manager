@@ -8,6 +8,12 @@ namespace AltifoxStudio.AltifoxAudioManager
 {
     public partial class AltifoxPersistentPlayer : MonoBehaviour
     {
+        IEnumerator CR_PlayDelayed(float timeBeforePlay)
+        {
+            yield return new WaitForSeconds(timeBeforePlay);
+            initPlayer();
+            Play();
+        }
         private IEnumerator CR_FadeOutLayers(string[] layersToFade, float duration, InterpolationType transition, bool releaseSources = true)
         {
             AltifoxAudioSourceBase[] audioSources;
