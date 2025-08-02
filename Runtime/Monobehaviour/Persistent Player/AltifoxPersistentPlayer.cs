@@ -66,7 +66,7 @@ namespace AltifoxStudio.AltifoxAudioManager
             altifoxMusicSO = playlistTracks[playlist.defaultMusic];
         }
 
-        public void ChangeActiveTrackTo(string trackName, bool fadeOut = true)
+        public void ChangeActiveTrackTo(string trackName, float fadeOutTime, float playDelay, bool fadeOut = true)
         {
             if (playlistTracks.TryGetValue(trackName, out AltifoxMusic nextTrack))
             {
@@ -75,21 +75,22 @@ namespace AltifoxStudio.AltifoxAudioManager
             if (fadeOut)
             {
                 string[] layersToFade = { "All" };
-                Coroutine CRfadeOut = StartCoroutine(CR_FadeOutLayers(layersToFade, 2, altifoxMusicSO.transitions, true));
-                try
+                Coroutine CRfadeOut = StartCoroutine(CR_FadeOutLayers(layersToFade, fadeOutTime, altifoxMusicSO.transitions, true));
+                if (loopTracking != null)
                 {
                     StopCoroutine(loopTracking);
                 }
-                catch (System.Exception)
-                {
-                  // pass
-                }
 
+                initPlayer();
+                StartCoroutine(CR_PlayDelayed(playDelay));
             }
-            initPlayer();
-            Play();
+
         }
 
+        public Coroutine PlayAsync()
+        {
+            return StartCoroutine(CR_PlayAsync());
+        }
         private void initPlayer()
         {
             for (int i = 0; i < altifoxMusicSO.musicLayers.Length; i++)
@@ -143,13 +144,13 @@ namespace AltifoxStudio.AltifoxAudioManager
                     newAS.outputAudioMixerGroup = layerConfig.targetMixer;
 
                     if (layerConfig.activeByDefault)
-                {
-                    newAS.volume = 1f;
-                }
-                else
-                {
-                    newAS.volume = 0f;
-                }
+                    {
+                        newAS.volume = 1f;
+                    }
+                    else
+                    {
+                        newAS.volume = 0f;
+                    }
 
                     musicLayers[layerConfig.name] = newAS;
                     layerIsActive[layerConfig.name] = true;
