@@ -66,7 +66,7 @@ namespace AltifoxStudio.AltifoxAudioManager
             altifoxMusicSO = playlistTracks[playlist.defaultMusic];
         }
 
-        private void ChangeActiveTrackTo(string trackName, bool fadeOut = true)
+        public void ChangeActiveTrackTo(string trackName, bool fadeOut = true)
         {
             if (playlistTracks.TryGetValue(trackName, out AltifoxMusic nextTrack))
             {
