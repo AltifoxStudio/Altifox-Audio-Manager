@@ -79,11 +79,15 @@ namespace AltifoxStudio.AltifoxAudioManager
         {
             foreach (AltifoxAudioSource AS in audioSourcesSB)
             {
+                if (AS != null)
+                {
                 if (!AS.gameObject.activeSelf)
                 {
                     AS.gameObject.SetActive(true);
                     return AS;
                 }
+                }
+
             }
             Debug.LogWarning("trying to assign an audio source, but none from the pool is available!");
             return null;

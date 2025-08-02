@@ -261,6 +261,10 @@ namespace AltifoxStudio.AltifoxAudioManager
         public int PreloadClip()
         {
             AltifoxAudioSourceBase assignedAudioSource = AltifoxAudioManager.Instance.RequestSBAltifoxAudioSource();
+            if (assignedAudioSource == null)
+            {
+                return 0;
+            }
             assignedAudioSource.gameObject.transform.SetParent(this.gameObject.transform);
             assignedAudioSource.gameObject.transform.position = this.gameObject.transform.position;
             if (assignedAudioSource != null)
