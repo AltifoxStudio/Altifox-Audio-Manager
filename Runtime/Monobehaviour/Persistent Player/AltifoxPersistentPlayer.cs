@@ -80,6 +80,7 @@ namespace AltifoxStudio.AltifoxAudioManager
                 {
                     StopCoroutine(loopTracking);
                 }
+                initPlayer();
                 StartCoroutine(CR_PlayDelayed(playDelay));
             }
 

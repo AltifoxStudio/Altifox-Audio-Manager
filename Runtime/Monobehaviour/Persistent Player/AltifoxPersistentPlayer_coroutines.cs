@@ -11,7 +11,6 @@ namespace AltifoxStudio.AltifoxAudioManager
         IEnumerator CR_PlayDelayed(float timeBeforePlay)
         {
             yield return new WaitForSeconds(timeBeforePlay);
-            initPlayer();
             Play();
         }
         private IEnumerator CR_FadeOutLayers(string[] layersToFade, float duration, InterpolationType transition, bool releaseSources = true)
