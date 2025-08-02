@@ -82,9 +82,8 @@ namespace AltifoxStudio.AltifoxAudioManager
                 }
 
                 initPlayer();
-                Debug.Log("UnFreeze ?");
-                StartCoroutine(CR_PlayDelayed(playDelay));
-                Debug.Log("Freeze ?");
+                Play();
+                //StartCoroutine(CR_PlayDelayed(playDelay));
             }
 
         }
@@ -142,13 +141,13 @@ namespace AltifoxStudio.AltifoxAudioManager
                     newAS.outputAudioMixerGroup = layerConfig.targetMixer;
 
                     if (layerConfig.activeByDefault)
-                {
-                    newAS.volume = 1f;
-                }
-                else
-                {
-                    newAS.volume = 0f;
-                }
+                    {
+                        newAS.volume = 1f;
+                    }
+                    else
+                    {
+                        newAS.volume = 0f;
+                    }
 
                     musicLayers[layerConfig.name] = newAS;
                     layerIsActive[layerConfig.name] = true;
