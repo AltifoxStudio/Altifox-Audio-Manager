@@ -40,6 +40,7 @@ namespace AltifoxStudio.AltifoxAudioManager
         public bool stopLoopingFullFlag = false;
         public int aimForLoopID = -1;
         public int currentLoopRegion = 0;
+        private Coroutine loopTracking;
         /// <summary>
         /// Very simple awake, with singleton pattern
         /// the idea is to populate the playlist from the playlist Scriptable Object
@@ -65,11 +66,23 @@ namespace AltifoxStudio.AltifoxAudioManager
             altifoxMusicSO = playlistTracks[playlist.defaultMusic];
         }
 
-        /// <summary>
-        /// When reaching start, we gather the data from the different layers of the
-        /// current music and call Play() if the user clicked on PlayOnAwake
-        /// </summary>
-        private void Start()
+        private void ChangeActiveTrackTo(string trackName, bool fadeOut = true)
+        {
+            if (playlistTracks.TryGetValue(trackName, out AltifoxMusic nextTrack))
+            {
+                altifoxMusicSO = nextTrack;
+            }
+            if (fadeOut)
+            {
+                string[] layersToFade = { "All" };
+                Coroutine CRfadeOut = StartCoroutine(CR_FadeOutLayers(layersToFade, 2, altifoxMusicSO.transitions, true));
+                StopCoroutine(loopTracking);
+            }
+            initPlayer();
+            Play();
+        }
+
+        private void initPlayer()
         {
             for (int i = 0; i < altifoxMusicSO.musicLayers.Length; i++)
             {
@@ -78,6 +91,15 @@ namespace AltifoxStudio.AltifoxAudioManager
                 layerIsActive.Add(layerConfig.name, false);
             }
             loopRegions = altifoxMusicSO.loopRegions;
+        }
+
+        /// <summary>
+        /// When reaching start, we gather the data from the different layers of the
+        /// current music and call Play() if the user clicked on PlayOnAwake
+        /// </summary>
+        private void Start()
+        {
+            initPlayer();
 
             if (playOnAwake)
             {
@@ -128,7 +150,7 @@ namespace AltifoxStudio.AltifoxAudioManager
             dspTimeAtPlay = AudioSettings.dspTime;
             if (altifoxMusicSO.loopRegions.Length > 0)
             {
-                Coroutine loopTracking = StartCoroutine(CR_ManageLoopRegion());
+                loopTracking = StartCoroutine(CR_ManageLoopRegion());
             }
             isPlaying = true;
         }
