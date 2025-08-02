@@ -88,6 +88,7 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         private void initPlayer()
         {
+            musicLayers.Clear();
             for (int i = 0; i < altifoxMusicSO.musicLayers.Length; i++)
             {
                 MusicLayer layerConfig = altifoxMusicSO.musicLayers[i];
