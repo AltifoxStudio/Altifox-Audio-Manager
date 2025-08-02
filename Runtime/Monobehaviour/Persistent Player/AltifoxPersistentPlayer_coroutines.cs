@@ -8,11 +8,6 @@ namespace AltifoxStudio.AltifoxAudioManager
 {
     public partial class AltifoxPersistentPlayer : MonoBehaviour
     {
-        IEnumerator CR_PlayDelayed(float timeBeforePlay)
-        {
-            yield return new WaitForSeconds(timeBeforePlay);
-            PlayAsync();
-        }
         private IEnumerator CR_FadeOutLayers(string[] layersToFade, float duration, InterpolationType transition, bool releaseSources = true)
         {
             AltifoxAudioSourceBase[] audioSources;
@@ -176,59 +171,6 @@ namespace AltifoxStudio.AltifoxAudioManager
             }
             
             yield break;
-        }
-
-        private IEnumerator CR_PlayAsync()
-        {
-            if (isPlaying)
-            {
-                yield break;
-            }
-
-            isPlaying = true;
-
-            for (int i = 0; i < altifoxMusicSO.musicLayers.Length; i++)
-            {
-                AltifoxAudioSourceBase newAS;
-                MusicLayer layerConfig = altifoxMusicSO.musicLayers[i];
-
-                if (!useDoubleBuffering)
-                {
-                    newAS = AltifoxAudioManager.Instance.RequestSBAltifoxAudioSource();
-                }
-                else
-                {
-                    newAS = AltifoxAudioManager.Instance.RequestDBAltifoxAudioSource();
-                }
-
-                newAS.clip = layerConfig.audioClip;
-                newAS.spatialize = layerConfig.spatialize;
-                newAS.spatialBlend = layerConfig.spatialBlend;
-                newAS.outputAudioMixerGroup = layerConfig.targetMixer;
-
-                if (layerConfig.activeByDefault)
-                {
-                    newAS.volume = 1f;
-                }
-                else
-                {
-                    newAS.volume = 0f;
-                }
-
-                musicLayers[layerConfig.name] = newAS;
-                layerIsActive[layerConfig.name] = true;
-                newAS.Play();
-
-                // Wait for the next frame before processing the next layer
-                yield return null;
-            }
-
-            dspTimeAtPlay = AudioSettings.dspTime;
-
-            if (altifoxMusicSO.loopRegions.Length > 0)
-            {
-                loopTracking = StartCoroutine(CR_ManageLoopRegion());
-            }
         }
 
         private IEnumerator CR_TransitionLayer(AltifoxAudioSourceBase audioSource, float targetVolume, float duration, InterpolationType transition)
