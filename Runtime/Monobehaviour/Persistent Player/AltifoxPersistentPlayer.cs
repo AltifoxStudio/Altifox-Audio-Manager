@@ -107,6 +107,8 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         private void initPlayer()
         {
+            tracksConfig[currentPlayingTrack].layerPlayVolume.Clear();
+            tracksConfig[currentPlayingTrack].layerIsActive.Clear();
             for (int i = 0; i < altifoxMusicSO.musicLayers.Length; i++)
             {
                 MusicLayer layerConfig = altifoxMusicSO.musicLayers[i];
