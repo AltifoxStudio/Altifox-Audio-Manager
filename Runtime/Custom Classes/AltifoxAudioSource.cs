@@ -190,8 +190,8 @@ namespace AltifoxStudio.AltifoxAudioManager
             get => audioSources[flipper].outputAudioMixerGroup;
             set
             {
-                audioSources[0].outputAudioMixerGroup = outputAudioMixerGroup;
-                audioSources[1].outputAudioMixerGroup = outputAudioMixerGroup;
+                audioSources[0].outputAudioMixerGroup = value;
+                audioSources[1].outputAudioMixerGroup = value;
             }
         }
 
