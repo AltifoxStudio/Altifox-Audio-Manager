@@ -82,12 +82,16 @@ namespace AltifoxStudio.AltifoxAudioManager
                 }
 
                 initPlayer();
-                Play();
+                PlayAsync();
                 //StartCoroutine(CR_PlayDelayed(playDelay));
             }
 
         }
 
+        public Coroutine PlayAsync()
+        {
+            return StartCoroutine(CR_PlayAsync());
+        }
         private void initPlayer()
         {
             for (int i = 0; i < altifoxMusicSO.musicLayers.Length; i++)
