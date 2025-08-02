@@ -82,8 +82,7 @@ namespace AltifoxStudio.AltifoxAudioManager
                 }
 
                 initPlayer();
-                PlayAsync();
-                //StartCoroutine(CR_PlayDelayed(playDelay));
+                StartCoroutine(CR_PlayDelayed(playDelay));
             }
 
         }
