@@ -2,6 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Audio;
 
 namespace AltifoxStudio.AltifoxAudioManager
 {
@@ -103,6 +104,11 @@ namespace AltifoxStudio.AltifoxAudioManager
             }
 
             return defaultSFX;
+        }
+
+        public override AudioMixerGroup GetTargetMixerGroup()
+        {
+            return GetAltifoxSFX().GetTargetMixerGroup();
         }
 
         public override float GetVolume()

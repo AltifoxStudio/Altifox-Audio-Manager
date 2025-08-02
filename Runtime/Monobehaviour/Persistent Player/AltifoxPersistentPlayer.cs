@@ -110,15 +110,16 @@ namespace AltifoxStudio.AltifoxAudioManager
                     newAS.clip = layerConfig.audioClip;
                     newAS.spatialize = layerConfig.spatialize;
                     newAS.spatialBlend = layerConfig.spatialBlend;
+                    newAS.outputAudioMixerGroup = layerConfig.targetMixer;
 
                     if (layerConfig.activeByDefault)
-                    {
-                        newAS.volume = 1f;
-                    }
-                    else
-                    {
-                        newAS.volume = 0f;
-                    }
+                {
+                    newAS.volume = 1f;
+                }
+                else
+                {
+                    newAS.volume = 0f;
+                }
 
                     musicLayers[layerConfig.name] = newAS;
                     layerIsActive[layerConfig.name] = true;

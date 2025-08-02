@@ -88,6 +88,10 @@ namespace AltifoxStudio.AltifoxAudioManager
             return minDistanceSpatialize;
         }
 
+        public override AudioMixerGroup GetTargetMixerGroup()
+        {
+            return targetMixer;
+        }
 
         public override float GetMaxSpatialDistance()
         {

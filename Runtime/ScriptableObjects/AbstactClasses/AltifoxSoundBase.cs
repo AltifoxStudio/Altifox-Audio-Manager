@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace AltifoxStudio.AltifoxAudioManager
 {
@@ -13,6 +14,8 @@ namespace AltifoxStudio.AltifoxAudioManager
         public abstract AltifoxSFX GetSFXObject();
 
         public abstract bool GetSpatializeBool();
+
+        public abstract AudioMixerGroup GetTargetMixerGroup();
 
         public abstract float GetMaxSpatialDistance();
         public abstract float GetMinSpatialDistance();

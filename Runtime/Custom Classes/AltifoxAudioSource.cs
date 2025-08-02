@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Audio;
 
 namespace AltifoxStudio.AltifoxAudioManager
 {
@@ -23,6 +24,8 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         public abstract float minDistance { get; set; }
         public abstract float maxDistance { get; set; }
+
+        public abstract AudioMixerGroup outputAudioMixerGroup { get; set; }
 
         public abstract bool mute { get; set; }
         public abstract bool spatialize { get; set; }
@@ -74,6 +77,12 @@ namespace AltifoxStudio.AltifoxAudioManager
         {
             get => audioSource.mute;
             set => audioSource.mute = value;
+        }
+
+        public override AudioMixerGroup outputAudioMixerGroup
+        {
+            get => audioSource.outputAudioMixerGroup;
+            set => audioSource.outputAudioMixerGroup = value;
         }
 
         public override bool spatialize
@@ -173,6 +182,16 @@ namespace AltifoxStudio.AltifoxAudioManager
             {
                 audioSources[0].volume = value;
                 audioSources[1].volume = value;
+            }
+        }
+
+        public override AudioMixerGroup outputAudioMixerGroup
+        {
+            get => audioSources[flipper].outputAudioMixerGroup;
+            set
+            {
+                audioSources[0].outputAudioMixerGroup = outputAudioMixerGroup;
+                audioSources[1].outputAudioMixerGroup = outputAudioMixerGroup;
             }
         }
 

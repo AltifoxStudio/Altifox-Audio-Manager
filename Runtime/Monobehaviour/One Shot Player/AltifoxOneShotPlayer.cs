@@ -275,6 +275,7 @@ namespace AltifoxStudio.AltifoxAudioManager
                 assignedAudioSource.minDistance = altifoxSFX.GetMinSpatialDistance();
                 assignedAudioSource.maxDistance = altifoxSFX.GetMaxSpatialDistance();
                 assignedAudioSource.spatialize = altifoxSFX.GetSpatializeBool();
+                assignedAudioSource.outputAudioMixerGroup = altifoxSFX.GetTargetMixerGroup();
 
                 Loaded = true;
                 IDCount++;

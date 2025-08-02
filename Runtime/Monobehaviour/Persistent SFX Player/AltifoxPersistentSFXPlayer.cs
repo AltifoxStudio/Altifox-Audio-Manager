@@ -70,6 +70,7 @@ namespace AltifoxStudio.AltifoxAudioManager
             audioSource.spatialBlend = altifoxSFX.GetSpatialBlend();
             audioSource.maxDistance = altifoxSFX.GetMaxSpatialDistance();
             audioSource.minDistance = altifoxSFX.GetMinSpatialDistance();
+            audioSource.outputAudioMixerGroup = altifoxSFX.GetTargetMixerGroup();
 
 
             audioSource.Play();

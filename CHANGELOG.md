@@ -12,3 +12,6 @@
 ## [1.0.2] - 30/07/2025
 - You can now create soundscapes, they allow for the random spawning of one shot sound sources within a box (but they do not work yet)
 - You can now have multiple loops and jump from one to another at will
+
+## [1.0.2] - 02/08/2025
+- Mixer Group assignments are now implemented
