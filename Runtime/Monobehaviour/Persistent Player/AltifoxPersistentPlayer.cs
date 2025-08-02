@@ -76,7 +76,15 @@ namespace AltifoxStudio.AltifoxAudioManager
             {
                 string[] layersToFade = { "All" };
                 Coroutine CRfadeOut = StartCoroutine(CR_FadeOutLayers(layersToFade, 2, altifoxMusicSO.transitions, true));
-                StopCoroutine(loopTracking);
+                try
+                {
+                    StopCoroutine(loopTracking);
+                }
+                catch (System.Exception)
+                {
+                  // pass
+                }
+
             }
             initPlayer();
             Play();
