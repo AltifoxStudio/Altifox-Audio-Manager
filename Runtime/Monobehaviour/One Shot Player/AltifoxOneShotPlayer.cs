@@ -57,6 +57,8 @@ namespace AltifoxStudio.AltifoxAudioManager
         public AltifoxSoundBase altifoxSFX;
         public bool Preload = false;
 
+        public AltifoxAudioSourceBase LastAssignedAudioSource;
+
         private Dictionary<int, AltifoxAudioSourceBase> assignedAudioSources = new Dictionary<int, AltifoxAudioSourceBase>();
         private bool Loaded = false;
         private int IDCount = 0;
@@ -264,7 +266,7 @@ namespace AltifoxStudio.AltifoxAudioManager
             if (assignedAudioSource != null)
             {
                 assignedAudioSources.Add(IDCount, assignedAudioSource);
-
+                LastAssignedAudioSource = assignedAudioSource;
                 // Assign randomized properties from the SFX definition
                 assignedAudioSource.clip = altifoxSFX.GetAudioClip();
                 assignedAudioSource.volume = altifoxSFX.GetVolume();
