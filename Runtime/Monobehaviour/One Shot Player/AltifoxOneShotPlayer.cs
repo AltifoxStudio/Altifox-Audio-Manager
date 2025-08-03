@@ -308,7 +308,7 @@ namespace AltifoxStudio.AltifoxAudioManager
         {
             if (altifoxSFX != null && altifoxSFX.CanPlayNow())
             {
-                if (!loaded[ID])
+                if (!loaded[audioSourceID])
                 {
                     // If not preloaded, load it now. This will become the source to play.
                     audioSourceID = PreloadClip();
@@ -332,7 +332,7 @@ namespace AltifoxStudio.AltifoxAudioManager
                         AltifoxAudioManager.Instance.AddReferenceInCount(altifoxSFX.GetSFXObject());
                         StartCoroutine(CR_TrackNRelease(audioSourceID));
                         altifoxSFX.TagPlayTime();
-                        loaded[ID] = false; // The clip has been used, so it's no longer considered "loaded".
+                        loaded[audioSourceID] = false; // The clip has been used, so it's no longer considered "loaded".
                     }
                 }
             }
