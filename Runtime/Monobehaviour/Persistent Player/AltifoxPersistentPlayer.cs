@@ -98,6 +98,7 @@ namespace AltifoxStudio.AltifoxAudioManager
             {
                 altifoxMusicSO = nextTrack;
                 loopRegions = altifoxMusicSO.loopRegions;
+                Debug.Log(loopRegions.Length);
                 currentPlayingTrack = trackName;
             }
             isPlaying = false;

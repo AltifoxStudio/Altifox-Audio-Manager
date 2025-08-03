@@ -78,7 +78,6 @@ namespace AltifoxStudio.AltifoxAudioManager
         private IEnumerator CR_ManageLoopRegion()
         {
             aimForLoopID = -1;
-            Debug.Log(currentLoopRegion);
             float loopStart = loopRegions[currentLoopRegion].GetLoopStartTime();
             float loopEnd = loopRegions[currentLoopRegion].GetLoopEndTime();
             //Debug.Log($"Starting Loop ! from time = {loopStart} to time = {loopEnd}");
