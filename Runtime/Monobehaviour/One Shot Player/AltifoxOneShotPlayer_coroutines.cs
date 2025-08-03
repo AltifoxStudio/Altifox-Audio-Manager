@@ -22,7 +22,7 @@ namespace AltifoxStudio.AltifoxAudioManager
                         yield break;
                         //throw;
                     }
-                    float duration = assignedAudioSource.clip.length / assignedAudioSource.pitch;
+                    //float duration = assignedAudioSource.clip.length / assignedAudioSource.pitch;
                     //Debug.Log($"duration is {duration}");
                     yield return new WaitForSeconds(duration);
 
