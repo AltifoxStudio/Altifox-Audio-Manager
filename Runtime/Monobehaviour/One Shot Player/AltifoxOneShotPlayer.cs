@@ -60,7 +60,7 @@ namespace AltifoxStudio.AltifoxAudioManager
         public AltifoxAudioSourceBase LastAssignedAudioSource;
 
         private Dictionary<int, AltifoxAudioSourceBase> assignedAudioSources = new Dictionary<int, AltifoxAudioSourceBase>();
-        private bool Loaded = false;
+        private Dictionary<int, bool> loaded = new Dictionary<int, bool>();
         private int IDCount = 0;
 
         private ParameterBuffer parameterBuffer;
@@ -283,7 +283,7 @@ namespace AltifoxStudio.AltifoxAudioManager
                 assignedAudioSource.spatialize = altifoxSFX.GetSpatializeBool();
                 assignedAudioSource.outputAudioMixerGroup = altifoxSFX.GetTargetMixerGroup();
 
-                Loaded = true;
+                loaded.Add(IDCount, true);
                 IDCount++;
                 return IDCount - 1;
             }
@@ -308,7 +308,7 @@ namespace AltifoxStudio.AltifoxAudioManager
         {
             if (altifoxSFX != null && altifoxSFX.CanPlayNow())
             {
-                if (!Loaded)
+                if (!loaded[ID])
                 {
                     // If not preloaded, load it now. This will become the source to play.
                     audioSourceID = PreloadClip();
@@ -332,7 +332,7 @@ namespace AltifoxStudio.AltifoxAudioManager
                         AltifoxAudioManager.Instance.AddReferenceInCount(altifoxSFX.GetSFXObject());
                         StartCoroutine(CR_TrackNRelease(audioSourceID));
                         altifoxSFX.TagPlayTime();
-                        Loaded = false; // The clip has been used, so it's no longer considered "loaded".
+                        loaded[ID] = false; // The clip has been used, so it's no longer considered "loaded".
                     }
                 }
             }
