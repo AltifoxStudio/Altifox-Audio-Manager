@@ -306,6 +306,12 @@ namespace AltifoxStudio.AltifoxAudioManager
         /// <param name="audioSourceID">Optional ID of a preloaded source. If -1, plays the most recently preloaded source.</param>
         public void Play(int audioSourceID = -1)
         {
+            if (audioSourceID == INIT_STATE && IDCount > 0)
+                {
+                    // If an ID wasn't specified, use the last one that was preloaded.
+                    audioSourceID = IDCount - 1;
+                }
+
             if (altifoxSFX != null && altifoxSFX.CanPlayNow())
             {
                 if (!loaded[audioSourceID])
@@ -315,11 +321,6 @@ namespace AltifoxStudio.AltifoxAudioManager
                 }
                 else if (audioSourceID != CANNOT_PLAY)
                 {
-                    if (audioSourceID == INIT_STATE && IDCount > 0)
-                    {
-                        // If an ID wasn't specified, use the last one that was preloaded.
-                        audioSourceID = IDCount - 1;
-                    }
 
                     if (assignedAudioSources.ContainsKey(audioSourceID))
                     {
