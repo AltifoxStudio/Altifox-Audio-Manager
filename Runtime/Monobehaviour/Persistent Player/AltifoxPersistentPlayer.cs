@@ -97,10 +97,10 @@ namespace AltifoxStudio.AltifoxAudioManager
             if (playlistTracks.TryGetValue(trackName, out AltifoxMusic nextTrack))
             {
                 altifoxMusicSO = nextTrack;
+                loopRegions = altifoxMusicSO.loopRegions;
                 currentPlayingTrack = trackName;
             }
             isPlaying = false;
-            loopRegions = altifoxMusicSO.loopRegions;
             Play();
 
         }
