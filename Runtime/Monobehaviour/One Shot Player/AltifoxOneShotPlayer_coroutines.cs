@@ -12,6 +12,16 @@ namespace AltifoxStudio.AltifoxAudioManager
                 if (assignedAudioSource.clip != null)
                 {
                     //Debug.Log($"Clip Lenght is {assignedAudioSource.clip.length}, pitch is {assignedAudioSource.pitch}");
+                    float duration;
+                    try
+                    {
+                        duration = assignedAudioSource.clip.length / assignedAudioSource.pitch;
+                    }
+                    catch (System.Exception)
+                    {
+                        yield break;
+                        //throw;
+                    }
                     float duration = assignedAudioSource.clip.length / assignedAudioSource.pitch;
                     //Debug.Log($"duration is {duration}");
                     yield return new WaitForSeconds(duration);
