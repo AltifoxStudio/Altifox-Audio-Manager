@@ -42,8 +42,8 @@ namespace AltifoxStudio.AltifoxAudioManager
         public bool useDoubleBuffering = true;
         public bool isPlaying
         {
-            get => playlistTracks[currentPlayingTrack].musicLayers.Values.Any(source => source.isPlaying)
-        }
+           get => playlistTracks[currentPlayingTrack].musicLayers.Values.Any(source => source.isPlaying);
+        } 
         private double dspTimeAtPlay;
         public bool looping;
         private const float NO_CUSTOM_LOOP_START = 0f;
