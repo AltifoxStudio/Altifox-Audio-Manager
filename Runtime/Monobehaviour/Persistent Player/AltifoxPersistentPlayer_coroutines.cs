@@ -67,7 +67,6 @@ namespace AltifoxStudio.AltifoxAudioManager
                         AltifoxAudioManager.Instance.ReleaseAltifoxAudioSource(AS);
                     }
                 }
-                isPlaying = false;
             }
 
 
