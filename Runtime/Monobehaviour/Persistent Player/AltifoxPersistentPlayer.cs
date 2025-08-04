@@ -1,6 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
-
+using System.Linq;
 
 namespace AltifoxStudio.AltifoxAudioManager
 {
@@ -40,7 +40,10 @@ namespace AltifoxStudio.AltifoxAudioManager
         // ========================================================================
         public bool playOnAwake;
         public bool useDoubleBuffering = true;
-        private bool isPlaying;
+        public bool isPlaying
+        {
+            get => playlistTracks[currentPlayingTrack].musicLayers.Values.Any(source => source.isPlaying)
+        }
         private double dspTimeAtPlay;
         public bool looping;
         private const float NO_CUSTOM_LOOP_START = 0f;
