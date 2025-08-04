@@ -218,10 +218,6 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         #region Core Logic
 
-        private void OnDestroy() {
-            Debug.Log($"Destroying the OneShotPlayer -- {this.name}");
-        }
-
         private void Start()
         {
             Debug.Log($"Starting the OneShotPlayer -- {this.name}");
