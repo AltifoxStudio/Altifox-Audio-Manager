@@ -233,7 +233,6 @@ namespace AltifoxStudio.AltifoxAudioManager
             {
                 loopTracking = StartCoroutine(CR_ManageLoopRegion());
             }
-            isPlaying = true;
         }
 
         public void Pause()
@@ -244,7 +243,6 @@ namespace AltifoxStudio.AltifoxAudioManager
                 AltifoxAudioSourceBase audioSource = layer.Value;
                 audioSource.Pause();
             }
-            isPlaying = false;
         }
 
         public void UnPause()
@@ -255,7 +253,6 @@ namespace AltifoxStudio.AltifoxAudioManager
                 AltifoxAudioSourceBase audioSource = layer.Value;
                 audioSource.UnPause();
             }
-            isPlaying = true;
         }
 
         /// <summary>
