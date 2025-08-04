@@ -42,7 +42,7 @@ namespace AltifoxStudio.AltifoxAudioManager
         public bool useDoubleBuffering = true;
         public bool isPlaying
         {
-           get => playlistTracks[currentPlayingTrack].musicLayers.Values.Any(source => source.isPlaying);
+           get => tracksConfig[currentPlayingTrack].musicLayers.Values.Any(source => source.isPlaying);
         } 
         private double dspTimeAtPlay;
         public bool looping;
@@ -104,7 +104,6 @@ namespace AltifoxStudio.AltifoxAudioManager
                 Debug.Log(loopRegions.Length);
                 currentPlayingTrack = trackName;
             }
-            isPlaying = false;
             Play();
 
         }
@@ -194,24 +193,6 @@ namespace AltifoxStudio.AltifoxAudioManager
                 layer.Pause();
             }
         }
-
-        // public void SwapPlayConfig()
-        // {
-        //     float t0 = Time.time;
-        //     Debug.Log("Start Swapping");
-        //     tempPlayConfig = tracksConfig[currentPlayingTrack];
-        //     float t1 = Time.time;
-        //     tracksConfig[currentPlayingTrack] = playConfigNext;
-        //     float t2 = Time.time;
-        //     playConfigNext = tempPlayConfig;
-        //     float t3 = Time.time;
-        //     loopRegions = altifoxMusicSO.loopRegions;
-        //     float t4 = Time.time;
-        //     isPlaying = false;
-        //     Play();
-        //     float t5 = Time.time;
-        //     Debug.Log($"times: t1: {t1-t0}, t2: {t2-t0}, t3: {t3-t0}, t4: {t4-t0}, t5: {t5-t0}");
-        // }
 
         /// <summary>
         /// Plays the track with the proper configuration of the different layers
