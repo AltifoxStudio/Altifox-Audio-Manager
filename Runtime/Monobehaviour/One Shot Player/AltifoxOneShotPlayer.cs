@@ -86,6 +86,7 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         void OnDestroy()
         {
+            Debug.Log($"Destroying the OneShotPlayer -- {this.name}");
             if ((playOnEvents & PlayOn.Destroy) != 0) PreloadAndPlay();
         }
 
@@ -219,6 +220,7 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         private void Start()
         {
+            Debug.Log($"Starting the OneShotPlayer -- {this.name}");
             parameterBuffer.parameter = AudioSourceParameter.nullParameter;
         }
 
