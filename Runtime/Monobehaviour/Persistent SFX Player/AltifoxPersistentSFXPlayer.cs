@@ -82,6 +82,7 @@ namespace AltifoxStudio.AltifoxAudioManager
             }
 
             audioSource.clip = altifoxSFX.GetAudioClip();
+            audioSource.volume = altifoxSFX.GetVolume();
             audioSource.spatialize = altifoxSFX.GetSpatializeBool();
             audioSource.spatialBlend = altifoxSFX.GetSpatialBlend();
             audioSource.maxDistance = altifoxSFX.GetMaxSpatialDistance();

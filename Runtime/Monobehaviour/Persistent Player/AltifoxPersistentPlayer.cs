@@ -51,6 +51,7 @@ namespace AltifoxStudio.AltifoxAudioManager
         public bool stopLoopingFullFlag = false;
         public int aimForLoopID = -1;
         public int currentLoopRegion = 0;
+        private MusicLoop currentLoop;
         private Coroutine loopTracking;
 
         public int NumberOfLoopRegions
@@ -106,6 +107,10 @@ namespace AltifoxStudio.AltifoxAudioManager
             }
             Play();
 
+        }
+
+        private void OnDestroy() {
+            StopAllCoroutines();
         }
 
         private void initPlayer()
