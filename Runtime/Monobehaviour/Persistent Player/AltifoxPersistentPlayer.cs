@@ -21,8 +21,6 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         public AltifoxPlaylist playlist;
 
-        private bool swappedOnce = false;
-
         // I hide this in inspector cause it's just a container that will be loaded with the 
         // currently playing music
         [HideInInspector]
@@ -48,7 +46,7 @@ namespace AltifoxStudio.AltifoxAudioManager
         public bool looping;
         private const float NO_CUSTOM_LOOP_START = 0f;
         private const float NO_CUSTOM_LOOP_END = -1f;
-        private LoopRegion[] loopRegions;
+        private MusicLoop[] loopRegions;
         public bool exitLoopFlag = false;
         public bool stopLoopingFullFlag = false;
         public int aimForLoopID = -1;
@@ -87,13 +85,9 @@ namespace AltifoxStudio.AltifoxAudioManager
             {
                 string[] layersToFade = { "All" };
                 Coroutine CRfadeOut = StartCoroutine(CR_FadeOutLayers(layersToFade, 2, altifoxMusicSO.transitions, true, tracksConfig[currentPlayingTrack]));
-                try
+                if (loopTracking != null)
                 {
                     StopCoroutine(loopTracking);
-                }
-                catch (System.Exception)
-                {
-                    // pass
                 }
             }
 
@@ -148,11 +142,9 @@ namespace AltifoxStudio.AltifoxAudioManager
                 trackName = track;
             }
             PlayConfig localPlayConfig = tracksConfig[trackName];
-            bool instantPause = false;
             if (playlistTracks.TryGetValue(track, out AltifoxMusic nextTrack))
             {
                 altifoxMusicSO_Temp = nextTrack;
-                instantPause = true;
             }
 
             for (int i = 0; i < altifoxMusicSO_Temp.musicLayers.Length; i++)

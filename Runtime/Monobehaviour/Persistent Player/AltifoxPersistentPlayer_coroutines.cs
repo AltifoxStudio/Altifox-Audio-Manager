@@ -72,108 +72,131 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         }
 
-
-
         private IEnumerator CR_ManageLoopRegion()
         {
+            //Debug.Log("Starting the loop");
             aimForLoopID = -1;
-            float loopStart = loopRegions[currentLoopRegion].GetLoopStartTime();
-            float loopEnd = loopRegions[currentLoopRegion].GetLoopEndTime();
-            //Debug.Log($"Starting Loop ! from time = {loopStart} to time = {loopEnd}");
+
+            MusicLoop currentLoop = loopRegions[currentLoopRegion];
+
+            ////Debug.Log($"Starting Loop ! from time = {loopStart} to time = {loopEnd}");
             AltifoxAudioSourceBase referenceSource = tracksConfig[currentPlayingTrack].musicLayers.Values.FirstOrDefault();
+
             if (referenceSource == null || referenceSource.GetAudioSource().clip == null)
             {
-                //Debug.LogError("Reference source or clip is missing!");
-                yield break;
+                //Debug.LogWarning("Error: Reference source or clip is missing this is probably a init race condition ! trying again in 0.5 seconds");
+                yield return new WaitForSeconds(0.5f);
             }
 
-            foreach (AltifoxAudioSourceBase source in tracksConfig[currentPlayingTrack].musicLayers.Values)
-            {
-                if (useDoubleBuffering)
-                {
-                    source.PrepareNextSource(loopStart);
-                }
-
-            }
-            float loopEndTime = (loopEnd != NO_CUSTOM_LOOP_END) ? loopEnd : referenceSource.GetAudioSource().clip.length;
-            float loopDuration = loopEndTime - loopStart;
-            float firstLoopDuration  = loopEndTime;
-            float targetlooptime = firstLoopDuration;
-
-            //Debug.Log($"End of Loop setup ! loop duration = {loopDuration} firstLoopDuration = {firstLoopDuration}, target loop time = {targetlooptime}");
             while (!stopLoopingFullFlag)
             {
+                // while (!exitLoopFlag)
+                // {
+                //     if (stopLoopingFullFlag)
+                //     {
+                //         exitLoopFlag = true;
+                //     }
+
+                //     ////Debug.Log($"continuing Loop ! from time = {loopStart} to time = {loopEndTime}, time = {referenceSource.time}");
+                //     double lastDspTime = AudioSettings.dspTime;
+                //     float progressInAudioSeconds = 0;
+
+                //     while (progressInAudioSeconds < targetlooptime)
+                //     {
+                //         ////Debug.Log($"Looping for now: target: {targetlooptime}");
+                //         progressInAudioSeconds = referenceSource.time;
+                //         yield return null;
+                //     }
+                //     //targetlooptime = loopDuration;
+                //     for (int i = 0; i < altifoxMusicSO.musicLayers.Length; i++)
+                //     {
+                //         MusicLayer layerConfig = altifoxMusicSO.musicLayers[i];
+                //         if (layerConfig.deactivateOnLoop)
+                //         {
+                //             tracksConfig[currentPlayingTrack].musicLayers[layerConfig.name].mute = true;
+                //         }
+                //     }
+
+                //     float restartTime = loopStart;
+                //     foreach (AltifoxAudioSourceBase source in tracksConfig[currentPlayingTrack].musicLayers.Values)
+                //     {
+                //         if (!useDoubleBuffering)
+                //         {
+                //             source.time = restartTime;
+                //             if (!source.isPlaying)
+                //             {
+                //                 source.UnPause();
+                //             }
+                //         }
+                //         else
+                //         {
+                //             source.Flip();
+                //             source.PrepareNextSource(loopStart);
+                //         }
+
+                //     }
+                //     //yield return new WaitUntil(() => referenceSource.time >= targetTime || !referenceSource.isPlaying);
+                // }
+                bool donePreparingLoop = false;
                 while (!exitLoopFlag)
                 {
-                    if (stopLoopingFullFlag)
+                    if (referenceSource.time <= currentLoop.StartTime + 1.0f && donePreparingLoop)
                     {
-                        exitLoopFlag = true;
+                        donePreparingLoop = false;
+                    }
+                    float currentInt = (int)referenceSource.time;
+                    if ((int)referenceSource.time > currentInt)
+                    {
+                        currentInt = (int)referenceSource.time;
+                        //Debug.Log($"Next loop in : {referenceSource.time - currentLoop.EndTime}, first loop ? {currentLoop.IsOnFirstPlaythrough}");
                     }
 
-                    //Debug.Log($"continuing Loop ! from time = {loopStart} to time = {loopEndTime}, time = {referenceSource.time}");
-                    double lastDspTime = AudioSettings.dspTime;
-                    float progressInAudioSeconds = 0;
-
-                    while (progressInAudioSeconds < targetlooptime)
+                    if (referenceSource.time + 1.0f > currentLoop.EndTime && !donePreparingLoop)
                     {
-                        //Debug.Log($"Looping for now: target: {targetlooptime}");
-                        progressInAudioSeconds = referenceSource.time;
-                        yield return null;
-                    }
-                    //targetlooptime = loopDuration;
-                    for (int i = 0; i < altifoxMusicSO.musicLayers.Length; i++)
-                    {
-                        MusicLayer layerConfig = altifoxMusicSO.musicLayers[i];
-                        if (layerConfig.deactivateOnLoop)
+                        //Debug.Log($"Prepare for resert: ResetPoint: {currentLoop.StartTime}, {currentLoop.EndTime}");
+                        double dspNow = AudioSettings.dspTime;
+                        double NextLoopEventTime = dspNow + (currentLoop.EndTime - referenceSource.time);
+                        donePreparingLoop = true;
+                        foreach (AltifoxAudioSourceBase source in tracksConfig[currentPlayingTrack].musicLayers.Values)
                         {
-                            tracksConfig[currentPlayingTrack].musicLayers[layerConfig.name].mute = true;
-                        }
-                    }
-
-                    float restartTime = loopStart;
-                    foreach (AltifoxAudioSourceBase source in tracksConfig[currentPlayingTrack].musicLayers.Values)
-                    {
-                        if (!useDoubleBuffering)
-                        {
-                            source.time = restartTime;
-                            if (!source.isPlaying)
+                            if (useDoubleBuffering)
                             {
-                                source.UnPause();
+                                source.PrepareNextSource(currentLoop.StartTime, currentLoop.EndTime, NextLoopEventTime);
+                                source.Flip();
+                                if (currentLoop.IsOnFirstPlaythrough)
+                                {
+                                    currentLoop.AdvanceToLoop();
+                                }
                             }
-                        }
-                        else
-                        {
-                            source.Flip();
-                            source.PrepareNextSource(loopStart);
+
+                            else
+                            {
+                                //Debug.LogError($"Error in track {currentPlayingTrack}: looping tracks require the use of double buffering");
+                                yield break;
+                            }
+
                         }
 
+
                     }
-                    //yield return new WaitUntil(() => referenceSource.time >= targetTime || !referenceSource.isPlaying);
+
+                    yield return null;
                 }
+
 
                 if (aimForLoopID >= 0)
                 {
-
                     currentLoopRegion = aimForLoopID;
                     exitLoopFlag = false;
-                    loopStart = loopRegions[currentLoopRegion].GetLoopStartTime();
-                    loopEnd = loopRegions[currentLoopRegion].GetLoopEndTime();
-                    float transitionStart = loopRegions[currentLoopRegion].GetTransitionStartTime();
-                    loopEndTime = (loopEnd != NO_CUSTOM_LOOP_END) ? loopEnd : referenceSource.GetAudioSource().clip.length;
-                    loopDuration = loopEndTime - loopStart;
-                    firstLoopDuration = loopEndTime;
-                    targetlooptime = firstLoopDuration;
-                    foreach (AltifoxAudioSourceBase source in tracksConfig[currentPlayingTrack].musicLayers.Values)
-                    {
-                        source.time = transitionStart;
-                    }
+                currentLoop = loopRegions[currentLoopRegion];
                 }
+
                 else
                 {
                     yield break;
                 }
             }
-            
+            //Debug.Log("Stoppped Looping");
             yield break;
         }
 

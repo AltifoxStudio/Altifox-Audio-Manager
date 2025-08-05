@@ -297,7 +297,7 @@ namespace AltifoxStudio.AltifoxAudioManager
             if (altifoxSFX.CanPlayNow())
             {
                 int audioSourceID = PreloadClip();
-                Play();
+                Play(audioSourceID);
             }
 
         }
@@ -306,7 +306,7 @@ namespace AltifoxStudio.AltifoxAudioManager
         /// Plays the sound. If not preloaded, it will load and play immediately.
         /// </summary>
         /// <param name="audioSourceID">Optional ID of a preloaded source. If -1, plays the most recently preloaded source.</param>
-        public void Play(int audioSourceID = -1)
+        public void Play(int audioSourceID = 0)
         {
             if (audioSourceID == INIT_STATE && IDCount > 0)
                 {

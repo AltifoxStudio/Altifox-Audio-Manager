@@ -38,7 +38,7 @@ namespace AltifoxStudio.AltifoxAudioManager.customEditorScritpts
             }
             if (GUILayout.Button("Play"))
             {
-                sfxPlayer.Play();
+                sfxPlayer.PreloadAndPlay();
             }
         }
     }

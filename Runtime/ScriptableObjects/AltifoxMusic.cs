@@ -27,7 +27,7 @@ namespace AltifoxStudio.AltifoxAudioManager
         // [Tooltip("If enabled, the music will loop between the specified start and end points.")]
         // public bool loop;
 
-        public LoopRegion[] loopRegions;
+        public MusicLoop[] loopRegions;
 
         [Header("Transitions & Switching")]
         [Tooltip("The curve shape for fades and transitions between layers.")]
@@ -40,31 +40,6 @@ namespace AltifoxStudio.AltifoxAudioManager
         [Tooltip("Defines the musical moment when layer changes will occur: instantly, on the next beat, or at the start of the next measure.")]
         public MusicDivision switchOn;
 
-        // --- METHODS (unchanged) ---
-        public float GetLoopStartTime(int loopRegionIndex)
-        {
-            LoopRegion loopRegion = loopRegions[loopRegionIndex];
-            if (loopRegion.sectionBeatsPerMinute <= 0) return 0f;
-            float secondsPerBeat = 60.0f / loopRegion.sectionBeatsPerMinute;
-            float totalBeats = (loopRegion.measureAtLoopStart) * loopRegion.sectionBeatsPerMeasure+ (loopRegion.beatAtLoopStart > 0 ? loopRegion.beatAtLoopStart - 1 : 0);
-            return totalBeats * secondsPerBeat;
-        }
 
-        public float GetLoopEndTime(int loopRegionIndex)
-        {
-            LoopRegion loopRegion = loopRegions[loopRegionIndex];
-            if (loopRegion.sectionBeatsPerMinute <= 0) return 0f;
-            float secondsPerBeat = 60.0f /  loopRegion.sectionBeatsPerMinute;
-            float totalBeats;
-            if (loopRegion.beatAtLoopEnd > 0)
-            {
-                totalBeats = (loopRegion.measureAtLoopEnd - 1) * loopRegion.sectionBeatsPerMeasure + loopRegion.beatAtLoopEnd;
-            }
-            else
-            {
-                totalBeats = loopRegion.measureAtLoopEnd * loopRegion.sectionBeatsPerMeasure;
-            }
-            return totalBeats * secondsPerBeat;
-        }
     }
 }

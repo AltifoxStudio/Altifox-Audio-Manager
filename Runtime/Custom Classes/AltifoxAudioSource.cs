@@ -14,7 +14,7 @@ namespace AltifoxStudio.AltifoxAudioManager
         public abstract void UnPause();
         public abstract void Stop();
         public abstract void Play();
-        public abstract void PrepareNextSource(float time);
+        public abstract void PrepareNextSource(float loopStartTime, float loopEndTime, double dspTimeAtReset);
 
         // Define abstract properties with get and set accessors.
         public abstract float volume { get; set; }
@@ -52,9 +52,9 @@ namespace AltifoxStudio.AltifoxAudioManager
             return audioSource;
         }
 
-        public override void PrepareNextSource(global::System.Single time)
+        public override void PrepareNextSource(global::System.Single loopStartTime, global::System.Single loopEndTime, global::System.Double dspTimeAtReset)
         {
-            // On passe
+            throw new System.NotImplementedException();
         }
 
         public override AudioSource GetSecondaryAudioSource()
@@ -269,8 +269,8 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         public override void Flip()
         {
-            audioSources[flipper].Stop();
-            audioSources[(flipper + 1) % 2].Play();
+            //audioSources[flipper].Stop();
+            //audioSources[(flipper + 1) % 2].Play();
             flipper = (flipper + 1) % 2;
         }
 
@@ -304,12 +304,12 @@ namespace AltifoxStudio.AltifoxAudioManager
             audioSources[flipper].Play();
         }
 
-        public override void PrepareNextSource(float time)
+        public override void PrepareNextSource(float loopStartTime, float loopEndTime, double dspTimeAtReset)
         {
-            audioSources[(flipper + 1) % 2].Play();
-            audioSources[(flipper + 1) % 2].Pause();
-            //Debug.Log($"Preparing the next source to start playing at: {time}");
-            audioSources[(flipper + 1) % 2].time = time;
+            Debug.Log(loopStartTime);
+            audioSources[(flipper + 1) % 2].PlayScheduled(dspTimeAtReset);
+            audioSources[(flipper + 1) % 2].time = loopStartTime;
+            audioSources[flipper].SetScheduledEndTime(dspTimeAtReset);
         }
 
     }

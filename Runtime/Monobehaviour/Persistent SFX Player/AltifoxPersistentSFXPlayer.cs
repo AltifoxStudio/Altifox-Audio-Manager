@@ -26,10 +26,13 @@ namespace AltifoxStudio.AltifoxAudioManager
         private bool isPlaying;
         private double dspTimeAtPlay;
         public bool looping;
+        public MusicLoop loop;
+        public bool exitLoopFlag = false;
         public float loopStartTime = 0;
         public float loopEndTime = -1f;
         private const float NO_CUSTOM_LOOP_START = 0f;
         private const float NO_CUSTOM_LOOP_END = -1f;
+        private Coroutine loopTracking;
 
         /// <summary>
         /// When reaching start, we gather the data from the different layers of the
@@ -46,6 +49,19 @@ namespace AltifoxStudio.AltifoxAudioManager
             }
         }
 
+        public void Stop()
+        {
+            if (!isPlaying)
+            {
+                return;
+            }
+            if (loopTracking != null)
+            {
+                StopCoroutine(loopTracking);
+            }
+            audioSource.Stop();
+        }
+
         /// <summary>
         /// Plays the track with the proper configuration of the different layers
         /// </summary>
@@ -55,7 +71,7 @@ namespace AltifoxStudio.AltifoxAudioManager
             {
                 return;
             }
-        
+
             if (!useDoubleBuffering)
             {
                 audioSource = AltifoxAudioManager.Instance.RequestSBAltifoxAudioSource();
@@ -78,7 +94,7 @@ namespace AltifoxStudio.AltifoxAudioManager
             audioSource.gameObject.transform.position = this.transform.position;
 
             dspTimeAtPlay = AudioSettings.dspTime;
-            Coroutine loopTracking = StartCoroutine(CR_ManageLoopRegion(loopStartTime, loopEndTime));
+            loopTracking = StartCoroutine(CR_ManageLoopRegion());
             isPlaying = true;
         }
 

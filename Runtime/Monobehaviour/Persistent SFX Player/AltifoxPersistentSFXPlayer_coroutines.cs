@@ -40,72 +40,68 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         }
 
-        private IEnumerator CR_ManageLoopRegion(float loopStart = NO_CUSTOM_LOOP_START, float loopEnd = NO_CUSTOM_LOOP_END)
+private IEnumerator CR_ManageLoopRegion()
         {
-            if (audioSource.clip == null)
+            //Debug.Log("Starting the loop");
+
+            MusicLoop currentLoop = loop;
+
+            ////Debug.Log($"Starting Loop ! from time = {loopStart} to time = {loopEnd}");
+
+            if (audioSource == null || audioSource.GetAudioSource().clip == null)
             {
-                Debug.LogError("Reference source or clip is missing!");
+                //Debug.LogError("Error: Reference source or clip is missing!");
                 yield break;
             }
 
-            float loopEndTime = (loopEnd != NO_CUSTOM_LOOP_END) ? loopEnd : audioSource.clip.length;
-            
-            // SÉCURITÉ : Valider que les temps de boucle sont logiques
-            if (loopStart >= loopEndTime)
+
+            bool donePreparingLoop = false;
+            while (!exitLoopFlag)
             {
-                Debug.LogError("Loop start time must be less than loop end time.");
-                yield break;
-            }
-
-            if (useDoubleBuffering)
-            {
-                audioSource.PrepareNextSource(loopStart);
-            }
-
-            // Pas besoin de toutes ces variables, on peut simplifier
-            // float loopDuration = loopEndTime - loopStart; 
-            // float firstLoopDuration = loopEndTime;
-            float targetlooptime = loopEndTime;
-            // Debug.Log($"Looping between {loopStart} and {loopEndTime}");
-            // Debug.Log(looping);
-            while (looping)
-            {
-                // SÉCURITÉ : La condition de la boucle vérifie maintenant si l'audio est en lecture.
-                // C'est une façon plus propre d'attendre que d'utiliser une boucle while manuelle.
-                yield return new WaitUntil(() => audioSource.time >= targetlooptime);
-
-                // Si on sort de l'attente parce que la lecture s'est arrêtée (et non parce qu'on a atteint la fin de la boucle),
-                // on quitte la coroutine pour éviter une boucle infinie.
-                // if (!audioSource.isPlaying && audioSource.time < targetlooptime)
-                // {
-                //     Debug.LogWarning("AudioSource stopped playing unexpectedly. Exiting loop coroutine.");
-                //     yield break;
-                // }
-
-                if (audioSource.time < targetlooptime)
+                if (audioSource.time <= currentLoop.StartTime + 1.0f && donePreparingLoop)
                 {
-                    //Debug.Log($"current time {audioSource.time}");
-                    //Debug.LogWarning("AudioSource stopped playing unexpectedly. Exiting loop coroutine.");
-                    yield break;
+                    donePreparingLoop = false;
                 }
 
-                float restartTime = loopStart;
-
-                if (!useDoubleBuffering)
+                float currentInt = (int)audioSource.time;
+                if ((int)audioSource.time > currentInt)
                 {
-                    audioSource.time = restartTime;
-                    // SÉCURITÉ : Utiliser Play() est plus robuste que UnPause()
-                    audioSource.Play();
-                }
-                else
-                {
-                    audioSource.Flip();
-                    audioSource.PrepareNextSource(loopStart);
+                    currentInt = (int)audioSource.time;
+                    //Debug.Log($"Next SFX loop in : {audioSource.time - currentLoop.EndTime}, first loop ? {currentLoop.IsOnFirstPlaythrough}");
                 }
 
-                // On ajuste la cible pour les boucles suivantes
-                targetlooptime = loopEndTime;
+                if (audioSource.time + 1.0f > currentLoop.EndTime && !donePreparingLoop)
+                {
+                    //Debug.Log($"Prepare for resert SFX loop: ResetPoint: {currentLoop.StartTime}, {currentLoop.EndTime}");
+                    double dspNow = AudioSettings.dspTime;
+                    double NextLoopEventTime = dspNow + (currentLoop.EndTime - audioSource.time);
+                    donePreparingLoop = true;
+
+                    if (useDoubleBuffering)
+                    {
+                        audioSource.PrepareNextSource(currentLoop.StartTime, currentLoop.EndTime, NextLoopEventTime);
+                        audioSource.Flip();
+                        if (currentLoop.IsOnFirstPlaythrough)
+                        {
+                            currentLoop.AdvanceToLoop();
+                        }
+                    }
+
+                    else
+                    {
+                        //Debug.LogError($"Error in SFX {this.name}: looping tracks require the use of double buffering");
+                        yield break;
+                    }
+
+
+
+                }
+
+                yield return null;
             }
+
+            //Debug.Log("Stoppped Looping");
+            yield break;
         }
 
     }
