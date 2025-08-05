@@ -52,6 +52,12 @@ namespace AltifoxStudio.AltifoxAudioManager
         public int aimForLoopID = -1;
         public int currentLoopRegion = 0;
         private Coroutine loopTracking;
+
+        public int NumberOfLoopRegions
+        {
+            get => loopRegions.Length;
+        }
+
         /// <summary>
         /// Very simple awake, with singleton pattern
         /// the idea is to populate the playlist from the playlist Scriptable Object
@@ -95,7 +101,7 @@ namespace AltifoxStudio.AltifoxAudioManager
             {
                 altifoxMusicSO = nextTrack;
                 loopRegions = altifoxMusicSO.loopRegions;
-                Debug.Log(loopRegions.Length);
+                //Debug.Log(loopRegions.Length);
                 currentPlayingTrack = trackName;
             }
             Play();

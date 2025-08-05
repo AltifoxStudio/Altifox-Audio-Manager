@@ -86,7 +86,7 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         void OnDestroy()
         {
-            Debug.Log($"Destroying the OneShotPlayer -- {this.name}");
+            //Debug.Log($"Destroying the OneShotPlayer -- {this.name}");
             if ((playOnEvents & PlayOn.Destroy) != 0) PreloadAndPlay();
         }
 
@@ -220,13 +220,13 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         private void Start()
         {
-            Debug.Log($"Starting the OneShotPlayer -- {this.name}");
+            //Debug.Log($"Starting the OneShotPlayer -- {this.name}");
             parameterBuffer.parameter = AudioSourceParameter.nullParameter;
         }
 
         public void SetParameterBuffer(AudioSourceParameter paramToAutomate, float value)
         {
-            //Debug.Log("Setting Parameter bu");
+            ////Debug.Log("Setting Parameter bu");
             parameterBuffer.parameter = paramToAutomate;
             parameterBuffer.value = value;
         }
@@ -238,7 +238,7 @@ namespace AltifoxStudio.AltifoxAudioManager
 
         private void ApplyParameterBuffer(AltifoxAudioSourceBase audioSource)
         {
-            //Debug.Log("Applying Parameter buffer");
+            ////Debug.Log("Applying Parameter buffer");
             switch (parameterBuffer.parameter)
             {
                 case AudioSourceParameter.volume:
@@ -329,7 +329,7 @@ namespace AltifoxStudio.AltifoxAudioManager
                         if (parameterBuffer.parameter != AudioSourceParameter.nullParameter)
                         {
                             ApplyParameterBuffer(assignedAudioSources[audioSourceID]);
-                            //Debug.Log($"Audiosource values: {assignedAudioSources[audioSourceID].volume},{assignedAudioSources[audioSourceID].pitch}");
+                            ////Debug.Log($"Audiosource values: {assignedAudioSources[audioSourceID].volume},{assignedAudioSources[audioSourceID].pitch}");
                         }
                         assignedAudioSources[audioSourceID].Play();
                         AltifoxAudioManager.Instance.AddReferenceInCount(altifoxSFX.GetSFXObject());
